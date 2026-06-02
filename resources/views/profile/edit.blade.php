@@ -1,123 +1,70 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dasbor Akun Saya') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Profil Anda')
-
-@section('content')
-    <div class="relative bg-cover bg-center h-[320px] flex flex-col justify-center items-center text-white" 
-         style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('images/profile/banner-ayam.png') }}');">
-        <div class="max-w-5xl mx-auto px-4 w-full text-center z-10">
-            <h1 class="text-3xl font-bold mb-4 tracking-wide">Profil Anda</h1>
-            <p class="text-sm font-medium text-gray-200 tracking-wide max-w-md mx-auto leading-relaxed">
-                Ubah informasi profil akun sesuai dengan kebutuhan anda !
-            </p>
-        </div>
-    </div>
-
-    <div class="bg-[#F0F0F0] py-16 px-4">
-        <div class="max-w-3xl mx-auto">
-            <form action="#" method="POST" class="space-y-5">
-                @csrf
-                @method('PUT') {{-- Digunakan jika Anda memproses update data di Laravel --}}
-
-                <div>
-                    <label for="name" class="block text-xs font-semibold text-gray-600 mb-2">Nama</label>
-                    <input type="text" id="name" name="name" value="Ahmad Ramadhan" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div>
-                    <label for="phone" class="block text-xs font-semibold text-gray-600 mb-2">Nomor Handphone</label>
-                    <input type="text" id="phone" name="phone" value="0812xxxxxxxxxx" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div>
-                    <label for="address" class="block text-xs font-semibold text-gray-600 mb-2">Alamat Lengkap</label>
-                    <input type="text" id="address" name="address" value="Jl. Raden KH. Hasyim Asyari" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div>
-                    <label for="postal_code" class="block text-xs font-semibold text-gray-600 mb-2">Kode Pos</label>
-                    <input type="text" id="postal_code" name="postal_code" value="1234567" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div>
-                    <label for="email" class="block text-xs font-semibold text-gray-600 mb-2">E-mail</label>
-                    <input type="email" id="email" name="email" value="sixseven67@gmail.com" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div>
-                    <label for="password" class="block text-xs font-semibold text-gray-600 mb-2">Password</label>
-                    <input type="password" id="password" name="password" value="xxxxxxxxxxxxxxxxxxxx" 
-                           class="w-full bg-white text-gray-700 text-xs px-4 py-3 rounded border border-transparent focus:outline-none focus:border-green-700 shadow-sm transition">
-                </div>
-
-                <div class="pt-8 flex justify-center">
-                    <button type="submit" 
-                            class="w-full max-w-xl bg-[#2A4418] hover:bg-[#203412] text-white font-semibold text-sm py-3.5 rounded-xl shadow-md transition-all duration-300 transform hover:-translate-y-0.5 text-center">
-                        Ubah Data
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <footer class="bg-[#1A1A1A] text-white relative overflow-hidden" style="background-image: linear-gradient(rgba(26, 26, 26, 0.92), rgba(26, 26, 26, 0.92)), url('{{ asset('images/footer/bg-leaves.png') }}'); bg-repeat: repeat;">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-1 md:grid-cols-4 gap-10 items-start relative z-10">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <div class="space-y-6">
-                <div class="flex items-center space-x-3">
-                    <img src="{{ asset('images/logo-white.png') }}" alt="Mitra Hidup Sehat" class="h-12 object-contain">
-                    <div class="leading-tight">
-                        <span class="block font-bold text-lg tracking-wide">Mitra</span>
-                        <span class="block font-semibold text-sm text-gray-300">Hidup Sehat</span>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <div class="md:col-span-1">
+                    <div class="bg-white shadow sm:rounded-lg overflow-hidden sticky top-6 border border-gray-100">
+                        <div class="p-4 bg-gray-50 border-b border-gray-100">
+                            <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Menu Navigasi</p>
+                        </div>
+                        <div class="flex flex-col">
+                            
+                            <a href="{{ route('profile.edit') }}" class="px-5 py-4 border-l-4 transition flex items-center space-x-3 {{ request()->routeIs('profile.edit') ? 'border-green-600 bg-green-50 text-green-700 font-bold' : 'border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:border-gray-300' }}">
+                                <span>Detail Profil</span>
+                            </a>
+
+                            <a href="{{ route('cart.index') }}" class="px-5 py-4 border-l-4 transition flex items-center space-x-3 {{ request()->routeIs('cart.index') ? 'border-green-600 bg-green-50 text-green-700 font-bold' : 'border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:border-gray-300' }}">
+                                <span>Keranjang Saya</span>
+                            </a>
+
+                            <a href="{{ route('orders.index') }}" class="px-5 py-4 border-l-4 transition flex items-center space-x-3 {{ request()->routeIs('orders.*') ? 'border-green-600 bg-green-50 text-green-700 font-bold' : 'border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:border-gray-300' }}">
+                                <span>Pesanan Saya</span>
+                            </a>
+
+                            <a href="{{ route('wishlist.index') }}" class="px-5 py-4 border-l-4 transition flex items-center space-x-3 {{ request()->routeIs('wishlist.index') ? 'border-green-600 bg-green-50 text-green-700 font-bold' : 'border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:border-gray-300' }}">
+                                <span>Wishlist Saya</span>
+                            </a>
+
+                            <div class="border-t border-gray-100"></div>
+
+                            <a href="/produk" class="px-5 py-4 border-l-4 border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:text-green-600 transition flex items-center space-x-3">
+                                <span>Kembali ke katalog</span>
+                            </a>
+                            
+                        </div>
                     </div>
                 </div>
-                <ul class="space-y-4 text-sm font-medium text-gray-300 pt-4">
-                    <li><a href="#" class="hover:text-white transition">Tentang Kami</a></li>
-                    <li><a href="#" class="hover:text-white transition">Distribusi Kami</a></li>
-                    <li><a href="#" class="hover:text-white transition">Beli Sekarang</a></li>
-                </ul>
-            </div>
+                <div class="md:col-span-3 space-y-6">
+                    
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg border border-gray-100">
+                        <div class="max-w-xl">
+                            @include('profile.partials.update-profile-information-form')
+                        </div>
+                    </div>
 
-            <div>
-                <h4 class="font-bold text-base mb-6 tracking-wide text-white">Produk</h4>
-                <ul class="space-y-4 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white transition">Telur Ayam Probiotik</a></li>
-                    <li><a href="#" class="hover:text-white transition">Ayam Sehat Organik</a></li>
-                    <li><a href="#" class="hover:text-white transition">Sayuran Hidroponik</a></li>
-                </ul>
-            </div>
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg border border-gray-100">
+                        <div class="max-w-xl">
+                            @include('profile.partials.update-password-form')
+                        </div>
+                    </div>
 
-            <div>
-                <h4 class="font-bold text-base mb-6 tracking-wide text-white">Informasi Menarik</h4>
-                <ul class="space-y-4 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white transition">Kumpulan Resep Inovatif</a></li>
-                    <li><a href="#" class="hover:text-white transition">Artikel Gaya Hidup Sehat</a></li>
-                    <li><a href="#" class="hover:text-white transition">Informasi Gizi & Nutrisi</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="font-bold text-base mb-6 tracking-wide text-white">Cari kami di platform lainnya !</h4>
-                <div class="space-y-4 text-xs text-gray-300">
-                    <a href="https://instagram.com/honestchicken" target="_blank" class="flex items-center space-x-3 group">
-                        <img src="{{ asset('images/footer/instagram.png') }}" alt="Instagram" class="w-7 h-7 object-contain">
-                        <span class="group-hover:text-white transition">@honestchicken</span>
-                    </a>
-                    <a href="#" target="_blank" class="flex items-center space-x-3 group">
-                        <img src="{{ asset('images/footer/shopee.png') }}" alt="Shopee" class="w-7 h-7 object-contain">
-                        <span class="group-hover:text-white transition">honestchicken</span>
-                    </a>
+                    <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg border border-gray-100">
+                        <div class="max-w-xl">
+                            @include('profile.partials.delete-user-form')
+                        </div>
+                    </div>
+                    
                 </div>
-            </div>
+                </div>
+            
         </div>
-
-        <div class="bg-[#466B2E] text-center py-4 text-xs font-medium text-gray-100 border-t border-white/10 relative z-10 tracking-wide">
-            Copyright © 2026 PT. Mitra Hidup Sehat | <a href="#" class="underline hover:text-white transition">Help & FAQ</a>
-        </div>
-    </footer>
-@endsection
+    </div>
+</x-app-layout>

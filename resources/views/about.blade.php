@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'Tentang Kami')
 
@@ -7,30 +7,45 @@
         <div class="w-full max-w-7xl mx-auto px-6 md:px-12 pt-8 z-10">
             <span class="text-sm font-semibold text-white/80">Tentang Kami</span>
         </div>
-        <div class="max-w-5xl mx-auto px-4 w-full text-center my-auto z-10">
-            <h1 class="text-3xl font-bold mb-8">Visi & Misi Perusahaan</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-                <div class="border border-white/40 p-6 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <h2 class="text-xl font-bold mb-3 tracking-wider border-b border-white/20 pb-2">VISI</h2>
-                    <p class="text-sm leading-relaxed text-gray-200">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis.</p>
-                </div>
-                <div class="border border-white/40 p-6 rounded-lg bg-black/30 backdrop-blur-sm">
-                    <h2 class="text-xl font-bold mb-3 tracking-wider border-b border-white/20 pb-2">MISI</h2>
-                    <p class="text-sm leading-relaxed text-gray-200">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis.</p>
+            <div class="max-w-5xl mx-auto px-4 w-full text-center my-auto z-10">
+                <h1 class="text-3xl font-bold mb-8 text-white">Visi & Misi Perusahaan</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                    <div class="border border-white/40 p-6 rounded-lg bg-black/30 backdrop-blur-sm">
+                        <h2 class="text-xl font-bold mb-3 tracking-wider border-b border-white/20 pb-2 text-white">VISI</h2>
+                        <p class="text-sm leading-relaxed text-gray-200">
+                            Menjadi penyedia pangan sehat dan organik terdepan yang terpercaya, serta berkomitmen penuh dalam meningkatkan kualitas hidup masyarakat melalui produk bernutrisi tinggi, alami, dan ramah lingkungan.
+                        </p>
+                    </div>
+
+                    <div class="border border-white/40 p-6 rounded-lg bg-black/30 backdrop-blur-sm">
+                        <h2 class="text-xl font-bold mb-3 tracking-wider border-b border-white/20 pb-2 text-white">MISI</h2>
+                        <ul class="text-sm leading-relaxed text-gray-200 list-disc list-outside ml-4 space-y-3">
+                            <li>Menyediakan produk pangan organik dan probiotik berkualitas premium yang terjamin kesegarannya serta bebas dari bahan kimia berbahaya.</li>
+                            <li>Memastikan kemudahan akses bagi pelanggan dalam mendapatkan bahan makanan sehat secara cepat dan praktis melalui platform digital yang terintegrasi.</li>
+                            <li>Mengedukasi dan menginspirasi masyarakat luas untuk mulai beralih dan konsisten menjalankan gaya hidup sehat yang berkelanjutan.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-32 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-        <div>
-            <h2 class="text-2xl font-bold text-primary mb-4">Profil & Perkembangan<br>Mitra Hidup Sehat</h2>
-            <p class="text-gray-600 leading-relaxed text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas.</p>
+        <div class="max-w-6xl mx-auto px-4 py-32 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-[#476024] mb-4">Profil & Perkembangan<br>Mitra Hidup Sehat</h2>
+                
+                <p class="text-gray-600 leading-relaxed text-sm mb-4">
+                    Mitra Hidup Sehat hadir sebagai jawaban atas kebutuhan masyarakat modern akan bahan pangan yang sehat, aman, dan berkualitas tinggi. Kami berfokus pada penyediaan produk peternakan premium, seperti ayam probiotik dan telur organik, yang dikelola secara profesional tanpa penggunaan bahan kimia maupun antibiotik berbahaya.
+                </p>
+                <p class="text-gray-600 leading-relaxed text-sm">
+                    Seiring berjalannya waktu, perusahaan kami terus berinovasi dengan mengembangkan fasilitas produksi yang modern dan higienis. Melalui standar pengawasan mutu yang ketat, mulai dari proses peternakan, pengemasan, hingga distribusi. Mitra Hidup Sehat berkomitmen untuk selalu menjaga kesegaran gizi produk demi mendukung gaya hidup sehat keluarga Indonesia.
+                </p>
+            </div>
+            <div>
+                <img src="{{ asset('images/tentangkami/2/Pabrik Profil Perusahaan.png') }}" class="rounded-lg shadow-lg w-full object-cover h-[400px]" alt="Pabrik Mitra Hidup Sehat">
+            </div>
         </div>
-        <div>
-            <img src="{{ asset('images/tentangkami/2/Pabrik Profil Perusahaan.png') }}" class="rounded-lg shadow-lg w-full object-cover h-[400px]" alt="Pabrik Mitra Hidup Sehat">
-        </div>
-    </div>
 
     <section class="relative bg-cover bg-center h-auto py-16 md:py-24 flex items-center text-white" style="background-image: url('{{ asset('images/tentangkami/3/BG.png') }}');">
         <div class="absolute inset-0 bg-black/50"></div>
@@ -163,22 +178,24 @@
     </section>
     <div class="max-w-7xl mx-auto px-4 py-16 text-center">
         <h2 class="text-3xl font-bold text-primary mb-12">Produk Unggulan Kami</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Bungkus Utama (Atur jadi 2 kolom, ditaruh di tengah pakai max-w-5xl dan mx-auto) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto px-4 mt-8">
+            
+            <!-- Kartu 1: Telur Probiotik -->
             <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image:linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Telur ayam probiotik.png') }}');">
-                <h3 class="font-bold text-lg mb-2">Telur Ayam Probiotik</h3>
-                <p class="text-xs text-gray-300 mb-4">Telur probiotik merupakan produk telur yang telah melewati serangkaian proses...</p>
-                <a href="#" class="bg-white text-primary text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Baca Selengkapnya</a>
+                <h3 class="font-bold text-lg mb-2">Telur Ayam Organik</h3>
+                <p class="text-xs text-gray-300 mb-4">Telur organik merupakan produk telur yang telah melewati serangkaian proses...</p>
+                <a href="/produk" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
             </div>
-            <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image: linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Ayam sehat organik.png') }}' );">
-                <h3 class="font-bold text-lg mb-2">Ayam Sehat Organik</h3>
+
+            <!-- Kartu 2: Ayam Organik -->
+            <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image: linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Ayam sehat organik.png') }}');">
+                <h3 class="font-bold text-lg mb-2">Ayam Probiotik</h3>
                 <p class="text-xs text-gray-300 mb-4">Ayam potong segar organik, yang kami jaga sebaik mungkin dengan proses untuk menjamin...</p>
-                <a href="#" class="bg-white text-primary text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Baca Selengkapnya</a>
+                <a href="/produk" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
             </div>
-            <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image: linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Sayuran hidroponik.png') }}' );">
-                <h3 class="font-bold text-lg mb-2">Sayuran Hidroponik</h3>
-                <p class="text-xs text-gray-300 mb-4">Sayuran kami ditanam menggunakan metode hidroponik yang mengedepankan kualitas...</p>
-                <a href="#" class="bg-white text-primary text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Baca Selengkapnya</a>
-            </div>
+
         </div>
     </div>
-@endsection
+
+ @endsection

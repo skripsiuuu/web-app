@@ -1,0 +1,85 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController; // Sesuaikan dengan nama controller Anda
+
+// --- 1. ROUTE UNTUK USER YANG BELUM DAFTAR/LOGIN (GUEST) ---
+Route::middleware('guest')->group(function () {
+    // Halaman & Proses Sign Up
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+// --- 2. ROUTE UNTUK USER YANG SUDAH LOGIN (AUTH) ---
+Route::middleware('auth')->group(function () {
+    
+    // Tampilan halaman edit profil (Ambil data via Controller, bukan fungsi kosong)
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    
+    // Proses simpan perubahan profil
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    
+});
+
+//bawaan
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Halaman Tentang Kami (Utama)
+Route::get('/', function () {
+    return view('about');
+});
+
+// Halaman Katalog Produk
+Route::get('/produk', function () {
+    return view('products.index');
+});
+
+// Route Kosong untuk halaman lainnya (Bisa kamu buat filenya nanti)
+Route::get('/informasi', function () {
+    return view('info');
+    // return "Halaman Informasi Menarik sedang dikembangkan.";
+})->name('informasi.index');
+// Route untuk Sub-Halaman Informasi Menarik
+Route::get('/informasi-menarik/gaya-hidup-sehat', function () {
+    return view('informasi.gaya-hidup');
+})->name('informasi.gaya-hidup');
+
+Route::get('/informasi-menarik/resep-inovatif', function () {
+    return view('informasi.resep');
+})->name('informasi.resep');
+
+Route::get('/informasi-menarik/gizi-nutrisi', function () {
+    return view('informasi.gizi');
+})->name('informasi.gizi');
+
+
+// Route::get('/distribusi', function () {
+//     // return view('');
+//     // return "Halaman Distribusi Kami sedang dikembangkan.";
+// });
+
+Route::get('/distribusi-kami', function () {
+    return view('distkami');
+})->name('distribusi.index');
+
+// Tambahkan di bawah route informasi.gaya-hidup yang sebelumnya
+Route::get('/informasi/gaya-hidup/manfaat-lari-pagi', function () {
+    return view('articles.lifestyle-detail'); 
+})->name('informasi.gaya-hidup.detail');
+
+// Halaman Detail Resep (Contoh: Omurice Khas Jepang)
+Route::get('/informasi/resep/omurice-khas-jepang', function () {
+    return view('articles.recipe-detail'); 
+})->name('informasi.resep.detail');
+
+// Halaman Detail Artikel Gizi (Contoh: Karbohidrat)
+Route::get('/informasi/gizi/mengenal-karbohidrat', function () {
+    return view('articles.nutrition-detail'); 
+})->name('informasi.gizi.detail');
+
+
+
+before
