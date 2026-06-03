@@ -131,7 +131,7 @@
                 <h4 class="text-white font-semibold mb-4">Cari kami di platform lainnya!</h4>
                 <div class="space-y-2">
                     <div class="flex items-center bg-transparent space-x-2">
-                        <img src="{{ asset('images/Logo Instagram.png') }}" alt="Logo IG" class="h-6 w-auto object-contain"> <a href="https://www.instagram.com/honestegg.id">@honestegg.id</a>
+                        <img src="{{ asset('images/Logo Instagram.png') }}" alt="Logo IG" class="h-6 w-auto object-contain"> <a href="https://www.instagram.com/mitrahidupsehat.id">@mitrahidupsehat.id</a>
                     </div>
                     <div class="flex items-center bg-transparent space-x-2">
                         <img src="{{ asset('images/Logo Shopee.png') }}" alt="Logo Shopee" class="h-6 w-auto object-contain"> <a href="https://id.shp.ee/fZWngfio">@Honest Chicken Official</a>
