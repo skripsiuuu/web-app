@@ -50,7 +50,7 @@ class ProductController extends Controller
         }
 
         // Eksekusi query
-        $products = $query->get(); 
+        $products = $query->paginate(8); 
 
         return view('products.index', compact('products'));
     }

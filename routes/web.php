@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Article;
+use App\Models\Recipe;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
@@ -81,13 +82,30 @@ Route::get('/informasi-menarik/gizi-nutrisi', function (\Illuminate\Http\Request
     
 })->name('informasi.gizi');
 
-// Route::get('/informasi-menarik/gizi-nutrisi', function () {
-//     return view('informasi.gizi');
-// })->name('informasi.gizi');
+// Route Halaman Kumpulan Resep
+Route::get('/informasi-menarik/kumpulan-resep', function (\Illuminate\Http\Request $request) {
+    $query = Recipe::query();
 
-Route::get('/informasi-menarik/resep-inovatif', function () {
-    return view('informasi.resep');
+    // Filter Kategori kalau tombol kategori diklik
+    if ($request->has('category')) {
+        $query->where('category', $request->category);
+    }
+    // Filter Pencarian
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $recipes = $query->latest()->paginate(9);
+    return view('informasi.resep', compact('recipes'));
 })->name('informasi.resep');
+
+// // Route::get('/informasi-menarik/gizi-nutrisi', function () {
+// //     return view('informasi.gizi');
+// // })->name('informasi.gizi');
+
+// Route::get('/informasi-menarik/resep-inovatif', function () {
+//     return view('informasi.resep');
+// })->name('informasi.resep');
 
 // Halaman Detail Artikel
 // Route Detail Gizi & Nutrisi
@@ -105,8 +123,10 @@ Route::get('/informasi-menarik/gaya-hidup-sehat/baca/{slug}', function ($slug) {
     return view('informasi.detail', compact('article'));
 })->name('informasi.gaya-hidup.detail');
 
-Route::get('/informasi/resep/omurice-khas-jepang', function () {
-    return view('articles.recipe-detail'); 
+// Route Halaman Detail Resep
+Route::get('/informasi-menarik/kumpulan-resep/{slug}', function ($slug) {
+    $recipe = Recipe::where('slug', $slug)->firstOrFail();
+    return view('informasi.resep-detail', compact('recipe'));
 })->name('informasi.resep.detail');
 
 

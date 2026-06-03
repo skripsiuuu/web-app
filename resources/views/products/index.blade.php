@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="relative bg-cover bg-center h-[180px] flex flex-col justify-end items-center justify-center text-white font-bold text-3xl shadow-inner" style="background-image: linear-gradient(rgba(71, 96, 36, 0.7), rgba(71, 96, 36, 0.7)), url('{{ asset('images/informasi/home/gaya-hidup-sehat.png') }}') ;">
+    <div class="relative bg-cover bg-center h-[180px] flex flex-col justify-end items-center justify-center text-white font-bold text-3xl shadow-inner" style="background-image: linear-gradient(rgba(71, 96, 36, 0.7), rgba(71, 96, 36, 0.7)), url('{{ asset('images/heroproduk.jpg') }}') ;">
         Katalog Produk Mitra Hidup Sehat
         <div class="absolute inset-0 flex flex-col justify-between pb-24">
             <div class="w-full max-w-7xl mx-auto px-6 md:px-12 pt-8">
@@ -49,7 +49,7 @@
                     'harga_terendah' => 'Harga Terendah',
                     'harga_tertinggi' => 'Harga Tertinggi',
                     'terlaris' => 'Terlaris',
-                    'rating_terbaik' => 'Rating Terbaik' // <--- TAMBAHAN BARU
+                    'rating_terbaik' => 'Rating Terbaik'
                 ];
                 $currentSort = request('sort', 'terbaru');
             @endphp
@@ -98,11 +98,9 @@
 
                 function pilihSortir(nilai) {
                     document.getElementById('sortInput').value = nilai;
-                    // Langsung otomatis submit/refresh form pas diklik
                     document.getElementById('sortInput').closest('form').submit();
                 }
 
-                // Tutup otomatis kalau lu ngeklik layar sembarangan di luar dropdown
                 document.addEventListener('click', function(event) {
                     const menu = document.getElementById('sortMenu');
                     const tombol = menu.previousElementSibling;
@@ -115,7 +113,7 @@
             </script>
 
             <div class="relative w-full sm:w-72">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk sehat anda..." class="w-full border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#476024] shadow-sm">
+                <input type="text" name="search" autocomplete="off" value="{{ request('search') }}" placeholder="Cari produk sehat anda..." class="w-full border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#476024] shadow-sm">
                 <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-50 hover:opacity-100 transition">
                     <img src="{{ asset('images/icons/search.png') }}" alt="Cari" class="w-6 h-6">
                 </button>
@@ -179,7 +177,6 @@
                     <span class="text-[#476024] font-bold text-sm">Rp {{ number_format($produk->price, 0, ',', '.') }}</span>
                     
                     @php
-                        // Cek apakah produk ini sudah ada di dalam keranjang (session)
                         $cart = session()->get('cart', []);
                         $qtyInCart = isset($cart[$produk->id]) ? $cart[$produk->id]['quantity'] : 0;
                     @endphp
@@ -202,8 +199,9 @@
         
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 pb-16 flex justify-center items-center space-x-2 text-sm text-gray-600">
-        </div>
+    <div class="max-w-7xl mx-auto px-4 pt-2 pb-16 flex justify-center">
+        {{ $products->links('paginasi') }}
+    </div>
 
     @if(session('success'))
         <div id="toast-success" class="fixed bottom-6 right-6 z-50 flex items-center w-full max-w-xs p-4 text-gray-700 bg-white rounded-xl shadow-xl border border-gray-100 transform transition-all duration-500 translate-y-0 opacity-100" role="alert">

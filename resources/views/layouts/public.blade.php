@@ -115,16 +115,16 @@
             <div>
                 <h4 class="text-white font-semibold mb-4">Produk</h4>
                 <ul class="space-y-2">
-                    <li><a href="#" class="hover:underline">Telur Ayam Organik</a></li>
-                    <li><a href="#" class="hover:underline">Ayam Probiotik  </a></li>
+                    <li><a href="/produk?category=Ayam%20Probiotik" class="hover:underline">Telur Ayam Organik</a></li>
+                    <li><a href="/produk?category=Telur%20Organik" class="hover:underline">Ayam Probiotik  </a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-white font-semibold mb-4">Informasi Menarik</h4>
                 <ul class="space-y-2">
-                    <li><a href="#" class="hover:underline">Kumpulan Resep Inovatif</a></li>
-                    <li><a href="#" class="hover:underline">Artikel Gaya Hidup Sehat</a></li>
-                    <li><a href="#" class="hover:underline">Artikel Gizi & Nutrisi</a></li>
+                    <li><a href="/informasi-menarik/kumpulan-resep" class="hover:underline">Kumpulan Resep Inovatif</a></li>
+                    <li><a href=/informasi-menarik/gaya-hidup-sehat class="hover:underline">Artikel Gaya Hidup Sehat</a></li>
+                    <li><a href=/informasi-menarik/gizi-nutrisi class="hover:underline">Artikel Gizi & Nutrisi</a></li>
                 </ul>
             </div>
             <div>
