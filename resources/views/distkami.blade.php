@@ -25,7 +25,9 @@
             <h3 class="text-xl font-bold mb-4 text-[#3A5A40]">Alamat Kami</h3>
             <div class="flex flex-col md:flex-row gap-6 items-center">
                 <div class="w-full md:w-1/3 h-28 rounded-lg overflow-hidden shadow-sm border border-gray-200">
-                    <img src="{{ asset('images/distribusi/map-placeholder.png') }}" class="w-full h-full object-cover" alt="Maps">
+                    <a href="https://maps.app.goo.gl/HPoEiCJYFFLvxZ8a9">
+                        <img src="{{ asset('images/distribusi/map-placeholder.png') }}" class="w-full h-full object-cover" alt="Maps">
+                    </a>    
                 </div>
                 <div class="w-full md:w-2/3">
                     <h4 class="font-bold text-lg">PT Mitra Hidup Sehat</h4>
@@ -73,18 +75,6 @@
 
     <div class="h-32 md:h-24"></div>
 
-    <div class="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-            <img src="{{ asset('images/distribusi/kemitraan.png') }}" class="w-full h-[280px] object-cover" alt="Kemitraan Terbuka">
-        </div>
-        <div>
-            <h2 class="text-2xl font-bold text-[#3A5A40] mb-4">Kemitraan Terbuka</h2>
-            <p class="text-gray-600 leading-relaxed text-sm text-justify">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisi malesuada lacinia integer nunc posuere.
-            </p>
-        </div>
-    </div>
-
     <div class="relative bg-cover bg-center py-16 text-white text-center" 
          style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('{{ asset('images/distribusi/bg-mitra.png') }}');">
         <div class="max-w-6xl mx-auto px-6">
@@ -92,19 +82,19 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="flex flex-col justify-between items-center h-full">
                     <p class="text-xs text-gray-200 leading-relaxed italic px-4">
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis."
+                        "Sejak beralih menggunakan pasokan Ayam Probiotik dan Telur Organik dari Mitra Hidup Sehat, kualitas hidangan kami meningkat drastis. Daging ayamnya sangat juicy, tidak susut saat dimasak, dan kuning telurnya jauh lebih pekat. Pelanggan kami sangat menghargai komitmen kami terhadap bahan baku sehat tanpa bahan kimia."
                     </p>
                     <h4 class="font-bold tracking-wider mt-6 uppercase border-t border-white/20 pt-2 w-1/2 text-center">Partner</h4>
                 </div>
                 <div class="flex flex-col justify-between items-center h-full">
                     <p class="text-xs text-gray-200 leading-relaxed italic px-4">
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis."
+                        "Mitra Hidup Sehat adalah penyuplai produk organik paling konsisten yang bekerja sama dengan kami. Standar kontrol kualitas (QC) yang ketat, sertifikasi keamanan pangan yang lengkap, serta kemasan yang rapi membuat produk mereka selalu menjadi incaran utama dan paling cepat habis di rak supermarket kami."
                     </p>
                     <h4 class="font-bold tracking-wider mt-6 uppercase border-t border-white/20 pt-2 w-1/2 text-center">Partner</h4>
                 </div>
                 <div class="flex flex-col justify-between items-center h-full">
                     <p class="text-xs text-gray-200 leading-relaxed italic px-4">
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis."
+                        "Sebagai penyedia katering diet sehat, bahan baku adalah nyawa bisnis kami. Produk unggas dari Mitra Hidup Sehat benar-benar bebas dari residu antibiotik dan tidak berbau amis. Sangat mudah diolah untuk menu meal prep harian, dan pelanggan kami merasa jauh lebih bugar setelah mengonsumsinya secara rutin."
                     </p>
                     <h4 class="font-bold tracking-wider mt-6 uppercase border-t border-white/20 pt-2 w-1/2 text-center">Partner</h4>
                 </div>
@@ -112,7 +102,21 @@
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-20 text-center">
+    <div class="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+            <img src="{{ asset('images/distribusi/kemitraan.png') }}" class="w-full h-[280px] object-cover" alt="Kemitraan Terbuka">
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold text-[#3A5A40] mb-4">Kemitraan Terbuka</h2>
+            <p class="text-gray-600 leading-relaxed text-sm text-justify">
+                Kami selalu menyambut baik peluang kolaborasi dengan para pelaku bisnis yang memiliki visi selaras: menghadirkan revolusi pangan sehat untuk masyarakat Indonesia. Baik Anda mengelola jaringan restoran, supermarket retail, hotel, maupun bisnis katering sehat, Mitra Hidup Sehat siap menjadi tulang punggung rantai pasok (supply chain) Anda.
+                
+                Dengan kapasitas peternakan modern yang memadai, kami menjamin ketersediaan pasokan Ayam Probiotik dan Telur Organik yang segar setiap harinya. Dapatkan penawaran harga B2B yang kompetitif, jaminan standar mutu yang tersertifikasi, serta pengiriman yang tepat waktu. Mari tumbuh dan ciptakan ekosistem hidup sehat bersama kami!
+            </p>
+        </div>
+    </div>
+
+    <!-- <div class="max-w-6xl mx-auto px-6 py-20 text-center">
         <h2 class="text-2xl font-bold text-[#3A5A40] mb-12">Benefit Kemitraan</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="bg-[#EAEAEA] rounded-2xl overflow-hidden shadow-sm h-[320px] flex flex-col">
@@ -136,8 +140,8 @@
                 <div class="h-1/3 flex items-center justify-center p-4">
                 </div>
             </div>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div>
 
     <div class="max-w-5xl mx-auto px-6 pb-24">
         <div class="bg-[#E5E5E5] rounded-2xl py-16 flex flex-col items-center justify-center shadow-inner">
@@ -145,7 +149,7 @@
                 <img src="{{ asset('images/LogoMHS.png') }}" class="w-160 h-160 object-contain" alt="Logo Mitra Hidup Sehat">
             </div>
         </div>
-    </div>
+    </div> -->
 
 </div>
 @endsection

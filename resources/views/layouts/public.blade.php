@@ -115,8 +115,8 @@
             <div>
                 <h4 class="text-white font-semibold mb-4">Produk</h4>
                 <ul class="space-y-2">
-                    <li><a href="/produk?category=Ayam%20Probiotik" class="hover:underline">Telur Ayam Organik</a></li>
-                    <li><a href="/produk?category=Telur%20Organik" class="hover:underline">Ayam Probiotik  </a></li>
+                    <li><a href="/produk?category=Ayam%20Probiotik" class="hover:underline">Ayam Probiotik</a></li>
+                    <li><a href="/produk?category=Telur%20Organik" class="hover:underline">Telur Ayam Organik </a></li>
                 </ul>
             </div>
             <div>

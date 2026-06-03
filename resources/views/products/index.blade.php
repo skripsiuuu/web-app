@@ -199,10 +199,6 @@
         
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 pt-2 pb-16 flex justify-center">
-        {{ $products->links('paginasi') }}
-    </div>
-
     @if(session('success'))
         <div id="toast-success" class="fixed bottom-6 right-6 z-50 flex items-center w-full max-w-xs p-4 text-gray-700 bg-white rounded-xl shadow-xl border border-gray-100 transform transition-all duration-500 translate-y-0 opacity-100" role="alert">
             <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
