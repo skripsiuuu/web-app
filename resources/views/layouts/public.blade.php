@@ -124,7 +124,7 @@
                 <ul class="space-y-2">
                     <li><a href="#" class="hover:underline">Kumpulan Resep Inovatif</a></li>
                     <li><a href="#" class="hover:underline">Artikel Gaya Hidup Sehat</a></li>
-                    <li><a href="#" class="hover:underline">Informasi Gizi & Nutrisi</a></li>
+                    <li><a href="#" class="hover:underline">Artikel Gizi & Nutrisi</a></li>
                 </ul>
             </div>
             <div>

@@ -9,7 +9,7 @@
             <nav class="text-xs md:text-sm font-semibold text-gray-800 mb-6">
                 <a href="{{ route('informasi.index') }}" class="hover:text-primary transition">Informasi Menarik</a> 
                 <span class="mx-1">|</span> 
-                <a href="{{ route('informasi.gizi') }}" class="hover:text-primary transition">Informasi Gizi & Nutrisi</a>
+                <a href="{{ route('informasi.gizi') }}" class="hover:text-primary transition">Artikel Gizi & Nutrisi</a>
             </nav>
 
             <div class="bg-[#EBE5D9] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-center shadow-sm mb-10">

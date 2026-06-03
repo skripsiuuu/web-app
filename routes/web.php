@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Article;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
@@ -43,30 +44,72 @@ Route::get('/informasi', function () {
     return view('info');
 })->name('informasi.index');
 
-Route::get('/informasi-menarik/gaya-hidup-sehat', function () {
-    return view('informasi.gaya-hidup');
+// 1. ROUTE BUAT HALAMAN GAYA HIDUP SEHAT
+Route::get('/informasi-menarik/gaya-hidup-sehat', function (\Illuminate\Http\Request $request) {
+    
+    // Filter KHUSUS kategori yang ada unsur kata "Gaya Hidup"
+    $query = \App\Models\Article::where('category', 'like', '%Gaya Hidup%');
+
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $articles = $query->latest()->paginate(9);
+    return view('informasi.gaya-hidup', compact('articles'));
+    
 })->name('informasi.gaya-hidup');
+
+
+// 2. ROUTE BUAT HALAMAN ARTIKEL GIZI & NUTRISI
+Route::get('/informasi-menarik/gizi-nutrisi', function (\Illuminate\Http\Request $request) {
+    
+    // Filter KHUSUS kategori yang ada unsur kata "Gizi & Nutrisi"
+    // (Bisa juga ditambahin kategori Olahraga kalau lu mau gabungin)
+    $query = \App\Models\Article::where(function($q) {
+        $q->where('category', 'like', '%Gizi & Nutrisi%')
+          ->orWhere('category', 'like', '%Olahraga%'); // Gw tambahin ini biar artikel ke-3 lu ikut masuk sini
+    });
+
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $articles = $query->latest()->paginate(9);
+    
+    // Note: Pastiin nama view blade lu buat halaman gizi beneran ini namanya ya
+    return view('informasi.gizi', compact('articles'));
+    
+})->name('informasi.gizi');
+
+// Route::get('/informasi-menarik/gizi-nutrisi', function () {
+//     return view('informasi.gizi');
+// })->name('informasi.gizi');
 
 Route::get('/informasi-menarik/resep-inovatif', function () {
     return view('informasi.resep');
 })->name('informasi.resep');
 
-Route::get('/informasi-menarik/gizi-nutrisi', function () {
-    return view('informasi.gizi');
-})->name('informasi.gizi');
-
 // Halaman Detail Artikel
-Route::get('/informasi/gaya-hidup/manfaat-lari-pagi', function () {
-    return view('articles.lifestyle-detail'); 
+// Route Detail Gizi & Nutrisi
+Route::get('/informasi-menarik/gizi-nutrisi/baca/{slug}', function ($slug) {
+    // Cari artikel di database berdasarkan slug yang diklik
+    $article = \App\Models\Article::where('slug', $slug)->firstOrFail();
+    
+    // Lempar data artikelnya ke halaman detail
+    return view('informasi.detail', compact('article')); 
+})->name('informasi.gizi.detail');
+
+// Route Detail Gaya Hidup Sehat
+Route::get('/informasi-menarik/gaya-hidup-sehat/baca/{slug}', function ($slug) {
+    $article = \App\Models\Article::where('slug', $slug)->firstOrFail();
+    return view('informasi.detail', compact('article'));
 })->name('informasi.gaya-hidup.detail');
 
 Route::get('/informasi/resep/omurice-khas-jepang', function () {
     return view('articles.recipe-detail'); 
 })->name('informasi.resep.detail');
 
-Route::get('/informasi/gizi/mengenal-karbohidrat', function () {
-    return view('articles.nutrition-detail'); 
-})->name('informasi.gizi.detail');
+
 
 // Halaman Distribusi
 Route::get('/distribusi-kami', function () {
