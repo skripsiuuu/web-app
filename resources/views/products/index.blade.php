@@ -15,7 +15,6 @@
 
     <div class="max-w-7xl mx-auto px-4 mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         
-        <!-- Filter Kategori (Kiri) -->
         <div class="flex flex-wrap gap-3 text-sm mb-4 md:mb-0">
             @php
                 // Tangkap kategori apa yang lagi dipilih di URL saat ini
@@ -38,15 +37,12 @@
             </a>
         </div>
         
-        <!-- Area Kanan: Dropdown Sortir & Search Bar (Sudah Digabung dalam Form) -->
         <form action="{{ route('products.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
             
-            <!-- Input Tersembunyi buat nyimpen filter kategori saat nyortir -->
             @if(request('category'))
                 <input type="hidden" name="category" value="{{ request('category') }}">
             @endif
 
-            <!-- Dropdown Sortir Modern (Pakai Vanilla JS 100% Aman) -->
             @php
                 $sortLabels = [
                     'terbaru' => 'Terbaru',
@@ -58,11 +54,9 @@
                 $currentSort = request('sort', 'terbaru');
             @endphp
 
-            <!-- Input tersembunyi buat nangkep nilai sortir -->
             <input type="hidden" name="sort" id="sortInput" value="{{ $currentSort }}">
 
             <div class="relative w-full sm:w-48">
-                <!-- Tombol Utama -->
                 <button 
                     type="button" 
                     onclick="toggleSortMenu()"
@@ -72,7 +66,6 @@
                     <svg id="sortArrow" class="w-4 h-4 ml-2 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
 
-                <!-- Isi Dropdown (Menu Melayang) -->
                 <div 
                     id="sortMenu"
                     class="hidden absolute right-0 sm:left-0 mt-2 w-full sm:w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden"
@@ -97,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Script Buka Tutup Menu Bawaan -->
             <script>
                 function toggleSortMenu() {
                     document.getElementById('sortMenu').classList.toggle('hidden');
@@ -122,9 +114,8 @@
                 });
             </script>
 
-            <!-- Search Bar -->
             <div class="relative w-full sm:w-72">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk sehat anda..." class="w-full border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk sehat anda..." class="w-full border border-gray-300 rounded-full pl-4 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#476024] shadow-sm">
                 <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-50 hover:opacity-100 transition">
                     <img src="{{ asset('images/icons/search.png') }}" alt="Cari" class="w-6 h-6">
                 </button>
@@ -137,9 +128,10 @@
         
        @foreach($products as $produk)
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between group">
-            <div class="relative bg-gray-100 p-4 h-48 flex items-center justify-center">
+            
+            <div class="relative aspect-square w-full overflow-hidden bg-gray-100">
                 
-                <span class="absolute top-2 left-2 z-10 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Ekspor Singapura</span>
+                <span class="absolute top-2 left-2 z-10 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">Ekspor Singapura</span>
                 
                 @auth
                     @php
@@ -151,17 +143,17 @@
                         <img 
                             src="{{ asset('images/icons/' . ($isWishlisted ? 'fav2.png' : 'fav1.png')) }}" 
                             alt="Wishlist" 
-                            class="w-8 h-8"
+                            class="w-8 h-8 drop-shadow-md"
                         >
                     </a>
                 @else
                     <a href="{{ route('login.kembali') }}" class="absolute top-2 right-2 z-10 transition-transform hover:scale-110">
-                        <img src="{{ asset('images/icons/fav1.png') }}" alt="Wishlist (Harus Login)" class="w-8 h-8">
+                        <img src="{{ asset('images/icons/fav1.png') }}" alt="Wishlist (Harus Login)" class="w-8 h-8 drop-shadow-md">
                     </a>
                 @endauth
                 
-                <a href="{{ route('products.show', $produk->slug) }}" class="w-full">
-                    <img src="{{ asset('images/produk/' . $produk->image) }}" alt="{{ $produk->name }}" class="w-full h-56 object-cover object-center rounded-t-lg">
+                <a href="{{ route('products.show', $produk->slug) }}" class="block w-full h-full">
+                    <img src="{{ asset('images/produk/' . $produk->image) }}" alt="{{ $produk->name }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
                 </a>
                 
             </div>
@@ -170,7 +162,7 @@
                     <p class="text-xs text-gray-400 font-medium">{{ $produk->category }}</p>
                     
                     <a href="{{ route('products.show', $produk->slug) }}">
-                        <h4 class="font-bold text-sm text-gray-800 mb-1 hover:text-primary transition">{{ $produk->name }}</h4>
+                        <h4 class="font-bold text-sm text-gray-800 mb-1 hover:text-[#476024] transition">{{ $produk->name }}</h4>
                     </a>
                     
                     @php
@@ -184,7 +176,7 @@
                     </div>
                 </div> 
                 <div class="flex items-center justify-between mt-2">
-                    <span class="text-primary font-bold text-sm">Rp {{ number_format($produk->price, 0, ',', '.') }}</span>
+                    <span class="text-[#476024] font-bold text-sm">Rp {{ number_format($produk->price, 0, ',', '.') }}</span>
                     
                     @php
                         // Cek apakah produk ini sudah ada di dalam keranjang (session)
@@ -199,7 +191,7 @@
                             <a href="{{ route('cart.add', $produk->id) }}" class="px-2.5 py-1 text-gray-600 hover:bg-gray-200 hover:text-green-600 rounded-r-lg transition font-bold text-sm">+</a>
                         </div>
                     @else
-                        <a href="{{ route('cart.add', $produk->id) }}" class="bg-primary text-white text-xs px-4 py-1.5 rounded hover:bg-darkGreen transition inline-block text-center relative z-10 shadow-sm">
+                        <a href="{{ route('cart.add', $produk->id) }}" class="bg-[#476024] text-white text-xs px-4 py-1.5 rounded hover:bg-[#364a1b] transition inline-block text-center relative z-10 shadow-sm">
                             Beli
                         </a>
                     @endif
@@ -210,16 +202,8 @@
         
     </div>
 
-    <!-- Paginasi (Asli Bawaan Lu) -->
     <div class="max-w-7xl mx-auto px-4 pb-16 flex justify-center items-center space-x-2 text-sm text-gray-600">
-        <!-- <button class="p-2 border rounded hover:bg-gray-100">◀</button>
-        <button class="px-3 py-1 border bg-primary text-white rounded">1</button>
-        <button class="px-3 py-1 border rounded hover:bg-gray-100">2</button>
-        <button class="px-3 py-1 border rounded hover:bg-gray-100">3</button>
-        <span>...</span>
-        <button class="px-3 py-1 border rounded hover:bg-gray-100">10</button>
-        <button class="p-2 border rounded hover:bg-gray-100">▶</button> -->
-    </div>
+        </div>
 
     @if(session('success'))
         <div id="toast-success" class="fixed bottom-6 right-6 z-50 flex items-center w-full max-w-xs p-4 text-gray-700 bg-white rounded-xl shadow-xl border border-gray-100 transform transition-all duration-500 translate-y-0 opacity-100" role="alert">
