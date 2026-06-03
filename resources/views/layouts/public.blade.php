@@ -131,16 +131,16 @@
                 <h4 class="text-white font-semibold mb-4">Cari kami di platform lainnya!</h4>
                 <div class="space-y-2">
                     <div class="flex items-center bg-transparent space-x-2">
-                        <img src="{{ asset('images/Logo Instagram.png') }}" alt="Logo IG" class="h-6 w-auto object-contain"> <span>@honestchicken</span>
+                        <img src="{{ asset('images/Logo Instagram.png') }}" alt="Logo IG" class="h-6 w-auto object-contain"> <a href="https://www.instagram.com/honestegg.id">@honestegg.id</a>
                     </div>
                     <div class="flex items-center bg-transparent space-x-2">
-                        <img src="{{ asset('images/Logo Shopee.png') }}" alt="Logo Shopee" class="h-6 w-auto object-contain"> <span>@honestchicken</span>
+                        <img src="{{ asset('images/Logo Shopee.png') }}" alt="Logo Shopee" class="h-6 w-auto object-contain"> <a href="https://id.shp.ee/fZWngfio">@Honest Chicken Official</a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="border-t border-gray-700 pt-4 text-center text-xs text-gray-500">
-            Copyright © 2026 PT. Mitra Hidup Sehat | <a href="#" class="underline">Help & FAQ</a>
+            Copyright © 2026 PT. Mitra Hidup Sehat | <a href="https://linktr.ee/honestegg" class="underline">Help & FAQ</a>
         </div>
     </footer>
 
