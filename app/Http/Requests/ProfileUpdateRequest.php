@@ -17,12 +17,19 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'email' => [
+                'required', 
+                'string', 
+                'lowercase', 
+                'email', 
+                'max:255', 
+                Rule::unique(User::class)->ignore($this->user()->id)
+            ],
             
-            // --- SATPAM VALIDASI BARU ---
-            'phone' => ['required', 'regex:/^0[0-9]{8,14}$/'], 
+            // --- SATPAM VALIDASI NOMOR HP INDO SUPER KETAT ---
+            'phone' => ['required', 'regex:/^08[1-9][0-9]{7,10}$/'], 
             'address' => ['required', 'string'],
-            'postal_code' => ['required', 'numeric'], // <--- UDAH DIUBAH
+            'postal_code' => ['required', 'numeric', 'digits:5'],
         ];
     }
 
@@ -32,11 +39,20 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.regex' => 'Nomor telepon harus berupa angka dan wajib diawali dengan angka 0.',
-            'phone.required' => 'Nomor telepon wajib diisi.',
-            'postal_code.numeric' => 'Kode pos hanya boleh berisi angka.', // <--- UDAH DIUBAH
-            'postal_code.required' => 'Kode pos wajib diisi.', // <--- UDAH DIUBAH
+            // Pesan error untuk Nama dan Email
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar.',
+
+            // Pesan error untuk Telepon, Alamat, dan Kode Pos
+            'phone.required' => 'Nomor handphone wajib diisi.',
+            'phone.regex' => 'Nomor tidak valid. Wajib berupa nomor handphone Indonesia (diawali 08) dengan panjang 10-13 digit.',
             'address.required' => 'Alamat lengkap wajib diisi.',
+            'postal_code.required' => 'Kode pos wajib diisi.',
+            'postal_code.numeric' => 'Kode pos hanya boleh berisi angka.',
+            'postal_code.digits' => 'Kode pos harus tepat berisi 5 digit angka.',
         ];
     }
-}   
+}
