@@ -32,6 +32,14 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string'],
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password wajib diisi.',
+        ];
+    }
 
     /**
      * Attempt to authenticate the request's credentials.
@@ -46,7 +54,8 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                // INI DIA MANTRA BUAT TRANSLATE ERROR LOGIN-NYA BRO!
+                'email' => 'Email atau password yang Anda masukkan salah.',
             ]);
         }
 

@@ -40,10 +40,14 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
+        ], [
+            // TRANSLATE UNTUK POP-UP HAPUS AKUN
+            'password.required' => 'Password wajib diisi untuk mengonfirmasi.',
+            'password.current_password' => 'Password yang Anda masukkan salah.'
         ]);
 
         $user = $request->user();
