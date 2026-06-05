@@ -26,18 +26,40 @@
                         <div class="space-y-1">
                             <div class="flex items-center space-x-3">
                                 <span class="text-sm font-bold text-gray-700">Invoice: #{{ $order->id }}</span>
-                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full {{ $order->status == 'paid' ? 'bg-blue-100 text-blue-700' : ($order->status == 'shipping' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700') }}">
-                                    {{ strtoupper($order->status) }}
-                                </span>
+                                    <span class="px-2.5 py-0.5 text-xs font-bold rounded-full 
+                                        {{ $order->status == 'unpaid' ? 'bg-red-100 text-red-700' : '' }}
+                                        {{ $order->status == 'paid' ? 'bg-blue-100 text-blue-700' : '' }}
+                                        {{ $order->status == 'shipping' ? 'bg-purple-100 text-purple-700' : '' }}
+                                        {{ $order->status == 'completed' ? 'bg-green-100 text-green-700' : '' }}">
+                                        
+                                        @if($order->status == 'unpaid')
+                                            BELUM BAYAR
+                                        @elseif($order->status == 'paid')
+                                            TERBAYAR
+                                        @elseif($order->status == 'shipping')
+                                            DIKIRIM
+                                        @elseif($order->status == 'completed')
+                                            SELESAI
+                                        @else
+                                            {{ strtoupper($order->status) }}
+                                        @endif
+                                    </span>
                             </div>
                             <p class="text-xs text-gray-400">Waktu: {{ $order->created_at->format('d M Y, H:i') }} WIB</p>
                             <div class="pt-2 text-sm text-gray-600">
                                 <strong>Rincian Item:</strong>
-                                <ul class="list-disc list-inside text-xs mt-1 text-gray-500">
+                                <ul class="list-disc list-inside text-xs mt-1 mb-3 text-gray-500">
                                     @foreach($order->items as $item)
                                         <li>{{ $item->product->name }} ({{ $item->quantity }} pcs)</li>
                                     @endforeach
                                 </ul>
+
+                                <strong>Informasi Pembeli:</strong>
+                                <div class="text-xs text-gray-500 mt-1 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                                    <p class="mb-1"><strong>Nama:</strong> {{ $order->recipient_name }}</p>
+                                    <p class="mb-1"><strong>No. Telp:</strong> {{ $order->phone_number }}</p>
+                                    <p><strong>Alamat:</strong> {{ $order->shipping_address }}</p>
+                                </div>
                             </div>
                         </div>
 

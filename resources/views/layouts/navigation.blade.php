@@ -33,7 +33,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Logout') }}
+                                {{ __('Keluar') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -68,7 +68,7 @@
                     <x-responsive-nav-link :href="route('logout')" class="text-white hover:bg-[#2c3d16]"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Logout') }}
+                        {{ __('Keluar') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

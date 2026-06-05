@@ -41,7 +41,7 @@ class PasswordResetLinkController extends Controller
 
         // 3. Terjemahkan balasan sukses atau gagalnya
         return $status == \Illuminate\Support\Facades\Password::RESET_LINK_SENT
-                    ? back()->with('status', 'Kami telah mengirimkan tautan reset password ke email Anda.')
+                    ? back()->with('status', 'Kami telah mengirimkan tautan reset kata sandi ke email Anda.')
                     : back()->withInput($request->only('email'))
                             ->withErrors(['email' => 'Kami tidak dapat menemukan pengguna dengan alamat email tersebut.']);
     }

@@ -39,7 +39,7 @@ class OrderController extends Controller
         // Ubah status pesanan jadi 'paid' (Sudah Dibayar, tunggu admin)
         $order->update(['status' => 'paid']);
 
-        return redirect()->route('orders.index')->with('success', 'Pembayaran Berhasil! Pesanan lu sedang nunggu konfirmasi Admin.');
+        return redirect()->route('orders.index')->with('success', 'Pembayaran Berhasil! Pesanan Anda akan dikonfirmasi oleh Admin.');
     }
 
     // 5. Proses Tombol "Pesanan Diterima" oleh Pembeli

@@ -3,6 +3,20 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Pesanan Saya</h2>
     </x-slot>
 
+    <style>
+        @keyframes trukJalan {
+            0% { right: -20px; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { right: 100%; opacity: 0; }
+        }
+        .animasi-truk {
+            position: absolute;
+            animation: trukJalan 4s infinite linear;
+            right: -20px; /* Standby di kanan layar */
+        }
+    </style>
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
@@ -45,20 +59,33 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="md:col-span-3 flex flex-col gap-4">
                     @forelse($orders as $order)
                         <div class="bg-white p-6 shadow-sm rounded-xl border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:shadow-md transition-shadow duration-300">
                             
-                            <div class="flex flex-col">
+                            <div class="flex flex-col min-w-[200px]">
                                 <div class="flex items-center gap-3 mb-2">
                                     <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">Invoice: #{{ $order->id }}</span>
                                     
                                     <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md
                                         {{ $order->status == 'unpaid' ? 'bg-red-50 text-red-600 border border-red-100' : '' }}
                                         {{ $order->status == 'paid' ? 'bg-blue-50 text-blue-600 border border-blue-100' : '' }}
-                                        {{ $order->status == 'shipping' ? 'bg-amber-50 text-amber-600 border border-amber-100' : '' }}
+                                        {{ $order->status == 'shipping' ? 'bg-purple-50 text-purple-600 border border-purple-100' : '' }}
                                         {{ $order->status == 'completed' ? 'bg-green-50 text-[#476024] border border-green-200' : '' }}">
-                                        {{ $order->status == 'shipping' ? 'Sedang Dikirim' : ($order->status == 'completed' ? 'Selesai' : $order->status) }}
+                                        
+                                        @if($order->status == 'unpaid')
+                                            Belum Bayar
+                                        @elseif($order->status == 'paid')
+                                            Terbayar
+                                        @elseif($order->status == 'shipping')
+                                            Dikirim
+                                        @elseif($order->status == 'completed')
+                                            Selesai
+                                        @else
+                                            {{ $order->status }}
+                                        @endif
+
                                     </span>
                                 </div>
                                 <p class="text-xs text-gray-500 mb-4">{{ $order->created_at->format('d F Y, H:i') }} WIB</p>
@@ -69,13 +96,31 @@
                                 </div>
                             </div>
 
+                            <div class="flex-1 w-full flex justify-center items-center py-4 md:py-0">
+                                @if($order->status == 'shipping')
+                                    <div class="flex flex-col items-center w-full max-w-[220px]">
+                                        <span class="text-[11px] font-bold text-purple-600 mb-1 uppercase tracking-wider">Barang Sedang di Jalan</span>
+                                        <div class="w-full relative h-8 border-b-2 border-dashed border-purple-200 overflow-hidden">
+                                            <div class="animasi-truk bottom-0 text-2xl">
+                                                🚚
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+
                             <div class="flex flex-col w-full md:w-auto gap-3 min-w-[180px]">
                                 
+                                @if($order->status == 'unpaid')
+                                    <a href="{{ route('orders.payment', $order->id) }}" class="w-full text-center px-5 py-2.5 text-sm font-bold text-white bg-[#476024] rounded-lg hover:bg-[#364a1b] transition shadow-sm border border-[#476024]">
+                                        Bayar Sekarang
+                                    </a>
+                                @endif
+
                                 @if($order->status == 'shipping')
                                     <form action="{{ route('orders.complete', $order->id) }}" method="POST" class="w-full">
                                         @csrf
                                         <button type="submit" onclick="return confirm('Pastikan pesanan Anda sudah diterima dengan baik.')" class="w-full bg-[#476024] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#364a1b] transition shadow-sm border border-[#476024] flex justify-center items-center gap-2">
-                                            <!-- <span>✓</span> -->
                                             <span>Pesanan Diterima</span>
                                         </button>
                                     </form>
@@ -95,7 +140,7 @@
                         </div>
                     @endforelse
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

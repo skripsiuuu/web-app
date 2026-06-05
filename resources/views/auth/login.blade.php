@@ -14,7 +14,7 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('Kata Sandi')" />
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
@@ -46,13 +46,13 @@
             <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
                 @if (Route::has('password.request'))
                     <a class="text-sm text-gray-600 hover:text-[#476024] underline transition focus:outline-none" href="{{ route('password.request') }}">
-                        Lupa password?
+                        Lupa Kata Sandi?
                     </a>
                 @endif
 
                 <!-- Tombol Hijau Andalan -->
                 <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-[#476024] hover:bg-[#364a1b] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition ease-in-out duration-150 shadow-md">
-                    LOG IN
+                    MASUK
                 </button>
             </div>
         </div>

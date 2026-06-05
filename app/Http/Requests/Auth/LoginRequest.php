@@ -37,7 +37,7 @@ class LoginRequest extends FormRequest
         return [
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ];
     }
 
@@ -55,7 +55,7 @@ class LoginRequest extends FormRequest
 
             throw ValidationException::withMessages([
                 // INI DIA MANTRA BUAT TRANSLATE ERROR LOGIN-NYA BRO!
-                'email' => 'Email atau password yang Anda masukkan salah.',
+                'email' => 'Email atau kata sandi yang Anda masukkan salah.',
             ]);
         }
 

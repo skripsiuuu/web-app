@@ -46,8 +46,8 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ], [
             // TRANSLATE UNTUK POP-UP HAPUS AKUN
-            'password.required' => 'Password wajib diisi untuk mengonfirmasi.',
-            'password.current_password' => 'Password yang Anda masukkan salah.'
+            'password.required' => 'Kata Sandi wajib diisi untuk mengonfirmasi.',
+            'password.current_password' => 'Kata Sandi yang Anda masukkan salah.'
         ]);
 
         $user = $request->user();

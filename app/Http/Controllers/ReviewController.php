@@ -24,7 +24,7 @@ class ReviewController extends Controller
                                 ->first();
 
         if ($existingReview) {
-            return redirect()->back()->with('error', 'Lu udah ngasih ulasan untuk produk ini.');
+            return redirect()->back()->with('error', 'Anda sudah memberikan ulasan untuk produk ini.');
         }
 
         Review::create([
@@ -35,6 +35,6 @@ class ReviewController extends Controller
             'comment' => $request->comment,
         ]);
 
-        return redirect()->back()->with('success', 'Terima kasih! Ulasan lu berhasil disimpan.');
+        return redirect()->back()->with('success', 'Terima kasih! Ulasan Anda berhasil disimpan.');
     }
 }

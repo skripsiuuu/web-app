@@ -72,7 +72,7 @@
 
                         <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 inline-block">
                             @csrf
-                            <button type="submit" class="text-xs text-white hover:text-red-300 ml-2 font-medium">Logout</button>
+                            <button type="submit" class="text-xs text-white hover:text-red-300 ml-2 font-medium">Keluar</button>
                         </form>
 
                     @else
