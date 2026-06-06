@@ -172,10 +172,13 @@ Route::middleware(['auth'])->group(function () {
         // Rute untuk Kelola Pengguna
         Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
         Route::delete('/admin/users/{id}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
+        Route::get('/admin/users/{id}/behavior', [App\Http\Controllers\AdminController::class, 'userBehavior'])->name('admin.users.behavior');
 
         // Rute untuk Kelola Laporan
         Route::get('/admin/reports', [App\Http\Controllers\AdminController::class, 'reports'])->name('admin.reports');
         Route::post('/admin/reports/{id}/update', [AdminController::class, 'updateReportStatus'])->name('admin.reports.update');
+        // Rute untuk Menghapus Ulasan
+        Route::delete('/admin/reviews/{id}', [App\Http\Controllers\AdminController::class, 'deleteReview'])->name('admin.reviews.delete');
     });
     
 });

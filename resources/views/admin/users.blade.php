@@ -36,11 +36,15 @@
                                 <p class="text-xs text-gray-400">Bergabung: {{ $user->created_at->format('d M Y') }}</p>
                             </div>
 
-                            <div>
+                            <div class="flex items-center gap-2 mt-4 md:mt-0">
+                                <a href="{{ route('admin.users.behavior', $user->id) }}" class="bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition shadow-sm">
+                                    Tinjau Perilaku
+                                </a>
+
                                 <form action="{{ route('admin.users.delete', $user->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                <button type="submit" onclick="return confirm('Patikan kembali! Semua data User akan dihapus dari sistem.')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white transition shadow-sm">
+                                    <button type="submit" onclick="return confirm('Pastikan perilaku pengguna sudah memenuhi kriteria ketentuan penghapusan akun! Semua data terkait pengguna ini akan ikut terhapus.')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white transition shadow-sm">
                                         Hapus Akun
                                     </button>
                                 </form>

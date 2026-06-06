@@ -176,8 +176,23 @@ class AdminController extends Controller
         
         return redirect()->back()->with('success', 'User berhasil dihapus dari sistem!');
     }
+    // 12. halaman tinjauan perilaku pengguna (riwayat ulasan, dll).
+    public function userBehavior($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        
+        // Mengambil riwayat ulasan melalui relasi pesanan (Order) milik pengguna
+        $reviews = \App\Models\Review::with('product')
+            ->whereHas('order', function ($query) use ($id) {
+                $query->where('user_id', $id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    // 12. Nampilin Halaman Laporan Sementara
+        return view('admin.user-behavior', compact('user', 'reviews'));
+    }
+
+    // 13. Nampilin Halaman Laporan Sementara
     public function reports()
     {
         // Tarik semua laporan refund, diurutkan dari yang paling baru
@@ -189,6 +204,10 @@ class AdminController extends Controller
     public function updateReportStatus(\Illuminate\Http\Request $request, $id)
     {
         $report = \App\Models\RefundReport::findOrFail($id);
+        
+        if ($report->status !== 'pending') {
+            return redirect()->back()->with('error', 'Laporan ini sudah dievaluasi dan tidak dapat diubah kembali.');
+        }
 
         $request->validate([
             'status' => 'required|in:pending,approved,rejected,revisi',
@@ -201,5 +220,13 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Status laporan dan umpan balik berhasil diperbarui.');
+    }
+
+    public function deleteReview($id)
+    {
+        $review = \App\Models\Review::findOrFail($id);
+        $review->delete();
+
+        return redirect()->back()->with('success', 'Ulasan tersebut berhasil dihapus dari sistem secara permanen.');
     }
 }

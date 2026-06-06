@@ -15,4 +15,15 @@ class Review extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // Relasi ke Produk
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    // Relasi ke Pesanan
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

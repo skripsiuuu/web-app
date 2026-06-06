@@ -50,7 +50,7 @@
 
                                     <div class="text-xs text-gray-600 bg-white p-3 rounded-lg border border-gray-100 shadow-sm space-y-1">
                                         <p><strong>Nama Pelapor:</strong> {{ $report->user?->name ?? 'Pengguna Telah Dihapus' }}</p>
-                                        <p><strong>Alamat Surel:</strong> {{ $report->user?->email ?? '-' }}</p>
+                                        <p><strong>Alamat Email:</strong> {{ $report->user?->email ?? '-' }}</p>
                                         <p><strong>Nomor Telepon:</strong> {{ $report->order?->phone_number ?? '-' }}</p>
                                     </div>
 
@@ -72,29 +72,52 @@
 
                             <!-- Bagian Bawah: Formulir Evaluasi Admin -->
                             <div class="w-full mt-6 pt-6 border-t border-gray-200">
-                                <form action="{{ route('admin.reports.update', $report->id) }}" method="POST" class="bg-white p-4 rounded-lg border border-purple-100 flex flex-col gap-3 shadow-sm">
-                                    @csrf
-                                    <div class="flex flex-col md:flex-row gap-4">
-                                        <div class="w-full md:w-1/3">
-                                            <label class="block text-xs font-bold text-gray-700 mb-1">Status Laporan</label>
-                                            <select name="status" class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500">
-                                                <option value="pending" {{ $report->status == 'pending' ? 'selected' : '' }}>Menunggu Proses</option>
-                                                <option value="revisi" {{ $report->status == 'revisi' ? 'selected' : '' }}>Perlu Revisi Bukti</option>
-                                                <option value="approved" {{ $report->status == 'approved' ? 'selected' : '' }}>Setujui Refund (Final)</option>
-                                                <option value="rejected" {{ $report->status == 'rejected' ? 'selected' : '' }}>Tolak Laporan (Final)</option>
-                                            </select>
+                                @if($report->status == 'pending')
+                                    <form action="{{ route('admin.reports.update', $report->id) }}" method="POST" class="bg-white p-4 rounded-lg border border-purple-100 flex flex-col gap-3 shadow-sm">
+                                        @csrf
+                                        <div class="flex flex-col md:flex-row gap-4">
+                                            <div class="w-full md:w-1/3">
+                                                <label class="block text-xs font-bold text-gray-700 mb-1">Status Laporan</label>
+                                                <select name="status" class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500" required>
+                                                    <option value="" disabled selected>-- Pilih Keputusan --</option>
+                                                    <option value="revisi">Revisi Bukti</option>
+                                                    <option value="approved">Setujui Refund(Final)</option>
+                                                    <option value="rejected">Tolak Laporan(Final)</option>
+                                                </select>
+                                            </div>
+                                            <div class="w-full md:w-2/3">
+                                                <label class="block text-xs font-bold text-gray-700 mb-1">Tanggapan / Umpan Balik (Opsional)</label>
+                                                <input type="text" name="admin_feedback" placeholder="Contoh: Bukti kurang jelas, mohon ajukan ulang dengan foto terang." class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500">
+                                            </div>
                                         </div>
-                                        <div class="w-full md:w-2/3">
-                                            <label class="block text-xs font-bold text-gray-700 mb-1">Tanggapan / Umpan Balik (Opsional)</label>
-                                            <input type="text" name="admin_feedback" value="{{ $report->admin_feedback }}" placeholder="Contoh: Bukti kurang jelas, mohon ajukan ulang dengan foto terang." class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500">
+                                        <div class="text-right mt-2">
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin dengan keputusan ini? Evaluasi yang sudah disimpan tidak dapat diubah kembali.')" class="bg-purple-700 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-purple-800 transition shadow-sm">
+                                                Simpan Evaluasi
+                                            </button>
+                                        </div>
+                                    </form>
+                                @else
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col gap-3 shadow-sm">
+                                        <div class="flex flex-col md:flex-row gap-4 items-start">
+                                            <div class="w-full md:w-1/3">
+                                                <span class="block text-xs font-bold text-gray-500 mb-2">Keputusan Akhir Admin</span>
+                                                @if($report->status == 'approved')
+                                                    <span class="inline-block px-3 py-1.5 bg-green-100 text-green-700 font-bold text-sm rounded-lg border border-green-200 cursor-not-allowed opacity-80">Disetujui</span>
+                                                @elseif($report->status == 'rejected')
+                                                    <span class="inline-block px-3 py-1.5 bg-red-100 text-red-700 font-bold text-sm rounded-lg border border-red-200 cursor-not-allowed opacity-80">Ditolak</span>
+                                                @elseif($report->status == 'revisi')
+                                                    <span class="inline-block px-3 py-1.5 bg-orange-100 text-orange-700 font-bold text-sm rounded-lg border border-orange-200 cursor-not-allowed opacity-80">Revisi Diminta</span>
+                                                @endif
+                                            </div>
+                                            <div class="w-full md:w-2/3">
+                                                <span class="block text-xs font-bold text-gray-500 mb-2">Tanggapan / Umpan Balik Admin</span>
+                                                <div class="w-full text-sm bg-white border border-gray-200 rounded p-2.5 min-h-[42px] text-gray-600 cursor-not-allowed">
+                                                    {{ $report->admin_feedback ?? 'Tidak ada catatan tambahan.' }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="text-right mt-2">
-                                        <button type="submit" class="bg-purple-700 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-purple-800 transition shadow-sm">
-                                            Simpan Evaluasi
-                                        </button>
-                                    </div>
-                                </form>
+                                @endif
                             </div>
 
                         </div>
