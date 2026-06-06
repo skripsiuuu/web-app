@@ -43,6 +43,8 @@
                                             DIKIRIM
                                         @elseif($order->status == 'completed')
                                             SELESAI
+                                        @elseif($order->status == 'cancelled')
+                                            KADALUARSA
                                         @else
                                             {{ strtoupper($order->status) }}
                                         @endif
