@@ -1,85 +1,197 @@
 <?php
 
+use App\Models\Article;
+use App\Models\Recipe;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProfileController; // Sesuaikan dengan nama controller Anda
 
-// --- 1. ROUTE UNTUK USER YANG BELUM DAFTAR/LOGIN (GUEST) ---
-Route::middleware('guest')->group(function () {
-    // Halaman & Proses Sign Up
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
-});
+/*
+|--------------------------------------------------------------------------
+| 1. RUTE PUBLIK (Bebas diakses tanpa login)
+|--------------------------------------------------------------------------
+*/
 
-// --- 2. ROUTE UNTUK USER YANG SUDAH LOGIN (AUTH) ---
-Route::middleware('auth')->group(function () {
-    
-    // Tampilan halaman edit profil (Ambil data via Controller, bukan fungsi kosong)
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    
-    // Proses simpan perubahan profil
-    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    
-});
-
-//bawaan
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// Halaman Tentang Kami (Utama)
+// Halaman Utama / Tentang Kami
 Route::get('/', function () {
     return view('about');
 });
+// Rute jembatan buat nyatet halaman terakhir sebelum login
+Route::get('/login-kembali', function () {
+    // Simpan URL halaman saat ini (katalog/produk) ke memori (session)
+    session()->put('url.intended', url()->previous());
+    
+    // Baru arahin ke halaman login beneran
+    return redirect()->route('login');
+})->name('login.kembali');
 
-// Halaman Katalog Produk
-Route::get('/produk', function () {
-    return view('products.index');
-});
+// Halaman Katalog & Detail Produk
+Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
+Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('products.show');
 
-// Route Kosong untuk halaman lainnya (Bisa kamu buat filenya nanti)
+// ---> RUTE KERANJANG SEKARANG DI SINI (Area Publik) <---
+Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+Route::get('/keranjang/tambah/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/keranjang/kurang/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+
+// Halaman Informasi Menarik & Artikel
 Route::get('/informasi', function () {
     return view('info');
-    // return "Halaman Informasi Menarik sedang dikembangkan.";
 })->name('informasi.index');
-// Route untuk Sub-Halaman Informasi Menarik
-Route::get('/informasi-menarik/gaya-hidup-sehat', function () {
-    return view('informasi.gaya-hidup');
+
+// 1. ROUTE BUAT HALAMAN GAYA HIDUP SEHAT
+Route::get('/informasi-menarik/gaya-hidup-sehat', function (\Illuminate\Http\Request $request) {
+    
+    // Filter KHUSUS kategori yang ada unsur kata "Gaya Hidup"
+    $query = \App\Models\Article::where('category', 'like', '%Gaya Hidup%');
+
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $articles = $query->latest()->paginate(9);
+    return view('informasi.gaya-hidup', compact('articles'));
+    
 })->name('informasi.gaya-hidup');
 
-Route::get('/informasi-menarik/resep-inovatif', function () {
-    return view('informasi.resep');
-})->name('informasi.resep');
 
-Route::get('/informasi-menarik/gizi-nutrisi', function () {
-    return view('informasi.gizi');
+// 2. ROUTE BUAT HALAMAN ARTIKEL GIZI & NUTRISI
+Route::get('/informasi-menarik/gizi-nutrisi', function (\Illuminate\Http\Request $request) {
+    
+    // Filter KHUSUS kategori yang ada unsur kata "Gizi & Nutrisi"
+    // (Bisa juga ditambahin kategori Olahraga kalau lu mau gabungin)
+    $query = \App\Models\Article::where(function($q) {
+        $q->where('category', 'like', '%Gizi & Nutrisi%')
+          ->orWhere('category', 'like', '%Olahraga%'); // Gw tambahin ini biar artikel ke-3 lu ikut masuk sini
+    });
+
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $articles = $query->latest()->paginate(9);
+    
+    // Note: Pastiin nama view blade lu buat halaman gizi beneran ini namanya ya
+    return view('informasi.gizi', compact('articles'));
+    
 })->name('informasi.gizi');
 
+// Route Halaman Kumpulan Resep
+Route::get('/informasi-menarik/kumpulan-resep', function (\Illuminate\Http\Request $request) {
+    $query = Recipe::query();
 
-// Route::get('/distribusi', function () {
-//     // return view('');
-//     // return "Halaman Distribusi Kami sedang dikembangkan.";
-// });
+    // Filter Kategori kalau tombol kategori diklik
+    if ($request->has('category')) {
+        $query->where('category', $request->category);
+    }
+    // Filter Pencarian
+    if ($request->has('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
 
+    $recipes = $query->latest()->paginate(9);
+    return view('informasi.resep', compact('recipes'));
+})->name('informasi.resep');
+
+// // Route::get('/informasi-menarik/gizi-nutrisi', function () {
+// //     return view('informasi.gizi');
+// // })->name('informasi.gizi');
+
+// Route::get('/informasi-menarik/resep-inovatif', function () {
+//     return view('informasi.resep');
+// })->name('informasi.resep');
+
+// Halaman Detail Artikel
+// Route Detail Gizi & Nutrisi
+Route::get('/informasi-menarik/gizi-nutrisi/baca/{slug}', function ($slug) {
+    // Cari artikel di database berdasarkan slug yang diklik
+    $article = \App\Models\Article::where('slug', $slug)->firstOrFail();
+    
+    // Lempar data artikelnya ke halaman detail
+    return view('informasi.detail', compact('article')); 
+})->name('informasi.gizi.detail');
+
+// Route Detail Gaya Hidup Sehat
+Route::get('/informasi-menarik/gaya-hidup-sehat/baca/{slug}', function ($slug) {
+    $article = \App\Models\Article::where('slug', $slug)->firstOrFail();
+    return view('informasi.detail', compact('article'));
+})->name('informasi.gaya-hidup.detail');
+
+// Route Halaman Detail Resep
+Route::get('/informasi-menarik/kumpulan-resep/{slug}', function ($slug) {
+    $recipe = Recipe::where('slug', $slug)->firstOrFail();
+    return view('informasi.resep-detail', compact('recipe'));
+})->name('informasi.resep.detail');
+
+
+
+// Halaman Distribusi
 Route::get('/distribusi-kami', function () {
     return view('distkami');
 })->name('distribusi.index');
 
-// Tambahkan di bawah route informasi.gaya-hidup yang sebelumnya
-Route::get('/informasi/gaya-hidup/manfaat-lari-pagi', function () {
-    return view('articles.lifestyle-detail'); 
-})->name('informasi.gaya-hidup.detail');
 
-// Halaman Detail Resep (Contoh: Omurice Khas Jepang)
-Route::get('/informasi/resep/omurice-khas-jepang', function () {
-    return view('articles.recipe-detail'); 
-})->name('informasi.resep.detail');
+/*
+|--------------------------------------------------------------------------
+| 2. RUTE PRIVATE (Wajib Login - Disatukan dalam 1 grup)
+|--------------------------------------------------------------------------
+*/
 
-// Halaman Detail Artikel Gizi (Contoh: Karbohidrat)
-Route::get('/informasi/gizi/mengenal-karbohidrat', function () {
-    return view('articles.nutrition-detail'); 
-})->name('informasi.gizi.detail');
+// Alihkan Dashboard default bawaan Breeze ke halaman Profil
+Route::get('/dashboard', function () {
+    return redirect()->route('profile.edit');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::middleware(['auth'])->group(function () {
+    
+    // Fitur Manajemen Profil User
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Fitur Wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::get('/wishlist/toggle/{id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
-before
+    // Fitur Checkout & Pesanan
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{id}/payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::post('/orders/{id}/pay', [OrderController::class, 'pay'])->name('orders.pay');
+    Route::post('/orders/{id}/complete', [OrderController::class, 'completeOrder'])->name('orders.complete');
+
+    // Fitur Ulasan
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // =============================================================
+    // KELOMPOK RUTE KHUSUS ADMIN (DIPROTEKSI OLEH SATPAM IS_ADMIN)
+    // =============================================================
+    Route::middleware(['is_admin'])->group(function () {
+        Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+        Route::post('/admin/orders/{id}/ship', [AdminController::class, 'shipOrder'])->name('admin.ship');
+        Route::get('/admin/products', [AdminController::class, 'products'])->name('admin.products');
+        Route::post('/admin/products/{id}/stock', [AdminController::class, 'updateStock'])->name('admin.update-stock');
+        Route::get('/admin/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+        Route::post('/admin/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
+        Route::get('/admin/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+        Route::post('/admin/products/{id}/update', [AdminController::class, 'updateProduct'])->name('admin.products.update');
+        Route::delete('/admin/products/{id}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+        // Route untuk Kelola Pelanggan
+        Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
+        Route::delete('/admin/users/{id}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
+
+        // Route untuk Kelola Laporan
+        Route::get('/admin/reports', [App\Http\Controllers\AdminController::class, 'reports'])->name('admin.reports');
+    });
+    
+});
+
+// Memuat rute bawaan milik Breeze (Login, Register, Lupa Password, dll)
+require __DIR__.'/auth.php';

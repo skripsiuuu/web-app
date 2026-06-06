@@ -5,6 +5,8 @@
             <div class="space-x-4">
                 <a href="{{ route('admin.orders') }}" class="text-sm font-medium text-gray-500 hover:text-green-700">Kelola Pesanan</a>
                 <a href="{{ route('admin.products') }}" class="text-sm font-bold text-green-700 underline">Kelola Stok</a>
+                <a href="{{ route('admin.users') }}" class="text-sm font-medium text-gray-500 hover:text-green-700">Kelola Pelanggan</a>
+                <a href="{{ route('admin.reports') }}" class="text-sm font-medium text-gray-500 hover:text-green-700">Kelola Laporan</a>
             </div>
         </div>
     </x-slot>

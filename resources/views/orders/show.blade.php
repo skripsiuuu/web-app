@@ -5,6 +5,13 @@
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="bg-white shadow sm:rounded-xl overflow-hidden border border-gray-100">
                 <div class="p-8 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
                     <div>
@@ -88,10 +95,37 @@
                     <h2 class="text-3xl font-black text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h2>
                 </div>
             </div>
-            
-            <div class="mt-6 text-center">
-                <a href="{{ route('orders.index') }}" class="text-sm text-gray-500 hover:text-primary font-medium">Kembali ke Riwayat Pesanan</a>
+
+            <div class="mt-8 flex flex-col items-center justify-center space-y-4">
+                
+                @php
+                    $latestReport = \App\Models\RefundReport::where('order_id', $order->id)->latest()->first();
+                @endphp
+
+                @if($order->status == 'completed')
+                    @if($latestReport)
+                        <a href="{{ route('orders.refund.history', $order->id) }}" class="px-6 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm">
+                            Lihat Riwayat Laporan
+                        </a>
+                        
+                        <!-- @if($latestReport->status == 'revisi')
+                            <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-lg text-sm font-bold hover:bg-orange-600 hover:text-white transition shadow-sm">
+                                🔄 Perbaiki & Ajukan Ulang Keluhan
+                            </a>
+                        @endif -->
+                    @else
+                        <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition shadow-sm">
+                            Ajukan Keluhan / Pengembalian Dana
+                        </a>
+                    @endif
+                @endif
+
+                <a href="{{ route('orders.index') }}" class="text-sm text-gray-500 hover:text-[#476024] font-medium underline transition">
+                    Kembali ke Riwayat Pesanan
+                </a>
+                
             </div>
+
         </div>
     </div>
 </x-app-layout>

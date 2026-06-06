@@ -160,4 +160,46 @@ class AdminController extends Controller
 
         return redirect()->route('admin.products')->with('success', 'Produk berhasil dihapus dari katalog.');
     }
+    // 10. Nampilin Halaman Kelola Pelanggan
+    public function users()
+    {
+        // Ambil semua user kecuali admin itu sendiri
+        $users = \App\Models\User::where('role', '!=', 'admin')->orderBy('created_at', 'desc')->get();
+        return view('admin.users', compact('users'));
+    }
+
+    // 11. Fungsi Hapus User
+    public function deleteUser($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $user->delete();
+        
+        return redirect()->back()->with('success', 'User berhasil dihapus dari sistem!');
+    }
+
+    // 12. Nampilin Halaman Laporan Sementara
+    public function reports()
+    {
+        // Tarik semua laporan refund, diurutkan dari yang paling baru
+        $reports = \App\Models\RefundReport::with(['user', 'order'])->orderBy('created_at', 'desc')->get();
+        
+        return view('admin.reports', compact('reports'));
+    }
+
+    public function updateReportStatus(\Illuminate\Http\Request $request, $id)
+    {
+        $report = \App\Models\RefundReport::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected,revisi',
+            'admin_feedback' => 'nullable|string'
+        ]);
+
+        $report->update([
+            'status' => $request->status,
+            'admin_feedback' => $request->admin_feedback
+        ]);
+
+        return redirect()->back()->with('success', 'Status laporan dan umpan balik berhasil diperbarui.');
+    }
 }

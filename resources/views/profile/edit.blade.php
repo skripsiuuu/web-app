@@ -33,7 +33,13 @@
                                 <span>Wishlist Saya</span>
                             </a>
 
-                            <div class="border-t border-gray-100"></div>
+                            <div class="border-t border-gray-100 mt-2"></div>
+
+                            @if(auth()->user()->role == 'admin')
+                                <a href="{{ route('admin.orders') }}" class="px-5 py-4 border-l-4 border-transparent text-[#476024] font-bold hover:bg-green-50 hover:border-[#476024] transition flex items-center space-x-3">
+                                    <span>Masuk Panel Admin</span>
+                                </a>
+                            @endif
 
                             <a href="/produk" class="px-5 py-4 border-l-4 border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:text-green-600 transition flex items-center space-x-3">
                                 <span>Kembali ke katalog</span>
@@ -42,6 +48,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="md:col-span-3 space-y-6">
                     
                     <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg border border-gray-100">
@@ -63,7 +70,8 @@
                     </div>
                     
                 </div>
-                </div>
+                
+            </div>
             
         </div>
     </div>

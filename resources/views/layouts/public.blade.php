@@ -57,37 +57,52 @@
                     </a>
                 </div> -->
                 
-                <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4">
+                                
+                @auth
+                <a href="{{ route('cart.index') }}" class="relative bg-darkGreen border border-white px-4 py-2 rounded text-sm font-semibold hover:bg-white hover:text-primary transition">
+                        Keranjang Saya
+
+                        @php
+                            // Ambil data keranjang dari session
+                            $cart = session('cart', []);
+                            
+                            // Hitung TOTAL KUANTITAS semua produk yang ada di keranjang
+                            // (Asumsi nama key buat jumlah barang di array adalah 'quantity')
+                            $cartCount = collect($cart)->sum('quantity');
+                        @endphp
+
+                        @if($cartCount > 0)
+                            <span class="absolute -top-2 -right-2 flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-red-500 rounded-full shadow-sm">
+                                {{ $cartCount }}
+                            </span>
+                        @endif
+                    </a>
                     
-                    @auth
-                        <a href="{{ route('cart.index') }}" class="bg-darkGreen border border-white px-4 py-2 rounded text-sm font-semibold hover:bg-white hover:text-primary transition">
-                            Keranjang Saya
-                        </a>
-                        
-                        <a href="{{ route('profile.edit') }}" class="inline-block transition transform hover:scale-105">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition hover:opacity-80">
-                                <img src="{{ asset('images/icons/profile.png') }}" class="w-full h-full object-contain" alt="User Profile">
-                            </div>
-                        </a>
+                    <a href="{{ route('profile.edit') }}" class="inline-block transition transform hover:scale-105">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition hover:opacity-80">
+                            <img src="{{ asset('images/icons/profile.png') }}" class="w-full h-full object-contain" alt="User Profile">
+                        </div>
+                    </a>
 
-                        <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 inline-block">
-                            @csrf
-                            <button type="submit" class="text-xs text-white hover:text-red-300 ml-2 font-medium">Keluar</button>
-                        </form>
+                    <form method="POST" action="{{ route('logout') }}" class="m-0 p-0 inline-block">
+                        @csrf
+                        <button type="submit" class="text-xs text-white hover:text-red-300 ml-2 font-medium">Keluar</button>
+                    </form>
 
-                    @else
-                        <a href="{{ route('login.kembali') }}" class="bg-darkGreen border border-white px-4 py-2 rounded text-sm font-semibold hover:bg-white hover:text-primary transition">
-                            Beli Sekarang
-                        </a>
-                        
-                        <a href="{{ route('login') }}" class="inline-block transition transform hover:scale-105">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition hover:opacity-80">
-                                <img src="{{ asset('images/icons/profile.png') }}" class="w-full h-full object-contain" alt="Guest Profile">
-                            </div>
-                        </a>
-                    @endauth
+                @else
+                    <a href="{{ route('login.kembali') }}" class="bg-darkGreen border border-white px-4 py-2 rounded text-sm font-semibold hover:bg-white hover:text-primary transition">
+                        Beli Sekarang
+                    </a>
+                    
+                    <a href="{{ route('login') }}" class="inline-block transition transform hover:scale-105">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition hover:opacity-80">
+                            <img src="{{ asset('images/icons/profile.png') }}" class="w-full h-full object-contain" alt="Guest Profile">
+                        </div>
+                    </a>
+                @endauth
 
-                </div>
+            </div>
 
             </div>
             
