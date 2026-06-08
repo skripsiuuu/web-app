@@ -82,9 +82,13 @@
                 </div>
                 
                 @php
-                    // Cek apakah produk ini sudah ada di dalam keranjang (session)
-                    $cart = session()->get('cart', []);
-                    $qtyInCart = isset($cart[$product->id]) ? $cart[$product->id]['quantity'] : 0;
+                    // MENGAMBIL DATA KERANJANG DARI DATABASE, BUKAN SESSION
+                    $qtyInCart = 0;
+                    if(Auth::check()) {
+                        $qtyInCart = \App\Models\Cart::where('user_id', Auth::id())
+                                       ->where('product_id', $product->id)
+                                       ->value('quantity') ?? 0;
+                    }
                 @endphp
 
                 @if($qtyInCart > 0)

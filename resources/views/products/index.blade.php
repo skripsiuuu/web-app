@@ -133,8 +133,11 @@
                 
                 @auth
                     @php
-                        $wishlist = session()->get('wishlist', []);
-                        $isWishlisted = isset($wishlist[$produk->id]);
+                        $isWishlisted = false;
+                        if(Auth::check()) {
+                            $isWishlisted = \App\Models\Wishlist::where('user_id', Auth::id())
+                                                ->where('product_id', $produk->id)->exists();
+                        }
                     @endphp
 
                     <a href="{{ route('wishlist.toggle', $produk->id) }}" class="absolute top-2 right-2 z-10 transition-transform hover:scale-110">
@@ -177,8 +180,12 @@
                     <span class="text-[#476024] font-bold text-sm">Rp {{ number_format($produk->price, 0, ',', '.') }}</span>
                     
                     @php
-                        $cart = session()->get('cart', []);
-                        $qtyInCart = isset($cart[$produk->id]) ? $cart[$produk->id]['quantity'] : 0;
+                        $qtyInCart = 0;
+                        if(Auth::check()) {
+                            $qtyInCart = \App\Models\Cart::where('user_id', Auth::id())
+                                           ->where('product_id', $produk->id)
+                                           ->value('quantity') ?? 0;
+                        }
                     @endphp
 
                     @if($qtyInCart > 0)

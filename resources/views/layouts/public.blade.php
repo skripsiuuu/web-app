@@ -61,23 +61,23 @@
                                 
                 @auth
                 <a href="{{ route('cart.index') }}" class="relative bg-darkGreen border border-white px-4 py-2 rounded text-sm font-semibold hover:bg-white hover:text-primary transition">
-                        Keranjang Saya
+                    Keranjang Saya
 
-                        @php
-                            // Ambil data keranjang dari session
-                            $cart = session('cart', []);
-                            
-                            // Hitung TOTAL KUANTITAS semua produk yang ada di keranjang
-                            // (Asumsi nama key buat jumlah barang di array adalah 'quantity')
-                            $cartCount = collect($cart)->sum('quantity');
-                        @endphp
+                    @php
+                        $cartCount = 0;
+                        // Cek dulu apakah user sudah login, kalau belum angkanya biarkan 0
+                        if(Auth::check()) {
+                            // Hitung TOTAL KUANTITAS langsung dari database untuk user ini
+                            $cartCount = \App\Models\Cart::where('user_id', Auth::id())->sum('quantity');
+                        }
+                    @endphp
 
-                        @if($cartCount > 0)
-                            <span class="absolute -top-2 -right-2 flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-red-500 rounded-full shadow-sm">
-                                {{ $cartCount }}
-                            </span>
-                        @endif
-                    </a>
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-bold text-white bg-red-500 rounded-full shadow-sm">
+                            {{ $cartCount > 99 ? '99+' : $cartCount }}
+                        </span>
+                    @endif
+                </a>
                     
                     <a href="{{ route('profile.edit') }}" class="inline-block transition transform hover:scale-105">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition hover:opacity-80">

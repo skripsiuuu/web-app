@@ -36,11 +36,6 @@ Route::get('/login-kembali', function () {
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
 Route::get('/produk/{slug}', [ProductController::class, 'show'])->name('products.show');
 
-// Rute Keranjang (Area Publik)
-Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
-Route::get('/keranjang/tambah/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::get('/keranjang/kurang/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
-
 // Halaman Informasi Menarik & Artikel
 Route::get('/informasi', function () {
     return view('info');
@@ -64,7 +59,7 @@ Route::get('/informasi-menarik/gizi-nutrisi', function (\Illuminate\Http\Request
     // Filter kategori yang memiliki unsur kata "Gizi & Nutrisi" atau "Olahraga"
     $query = \App\Models\Article::where(function($q) {
         $q->where('category', 'like', '%Gizi & Nutrisi%')
-          ->orWhere('category', 'like', '%Olahraga%'); 
+            ->orWhere('category', 'like', '%Olahraga%'); 
     });
 
     if ($request->has('search')) {
@@ -136,6 +131,14 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // =============================================================
+    // FITUR YANG DIPINDAHKAN DARI AREA PUBLIK (Pencegah Error Name on Null)
+    // =============================================================
+    // Fitur Keranjang 
+    Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/keranjang/tambah/{id}', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/keranjang/kurang/{id}', [CartController::class, 'decrease'])->name('cart.decrease');
+
     // Fitur Wishlist
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::get('/wishlist/toggle/{id}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
@@ -184,10 +187,8 @@ Route::middleware(['auth'])->group(function () {
     
 });
 
-// Rute untuk menerima notifikasi otomatis dari Midtrans
+// Rute untuk menerima notifikasi otomatis dari Midtrans (Wajib di luar Auth agar Midtrans bisa akses)
 Route::post('/midtrans/callback', [OrderController::class, 'callback'])->name('midtrans.callback');
-
-
 
 // Memuat rute bawaan milik Breeze
 require __DIR__.'/auth.php';

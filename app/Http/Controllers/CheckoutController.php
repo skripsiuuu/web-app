@@ -5,74 +5,96 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Cart; // Tambahkan ini buat manggil tabel Cart
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class CheckoutController extends Controller
 {
     public function process()
     {
-        $cart = session()->get('cart');
+        // 1. Ambil data keranjang dari DATABASE, bukan session lagi
+        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
 
-        if (!$cart || count($cart) == 0) {
+        // 2. Cek apakah keranjang kosong
+        if ($cartItems->isEmpty()) {
             return redirect()->back()->with('error', 'Keranjang Anda masih kosong');
         }
 
+        // 3. Hitung Total Harga dari database
         $totalPrice = 0;
-        foreach ($cart as $id => $details) {
-            $totalPrice += $details['price'] * $details['quantity'];
+        foreach ($cartItems as $item) {
+            $totalPrice += $item->product->price * $item->quantity;
         }
 
-        // Ambil data user yang lagi login buat ngisi alamat
         $user = Auth::user();
 
-        // --- SATPAM VALIDASI ---
-        // Cek apakah nomor telepon, alamat, atau kode pos masih kosong
-        // Note: Sesuaikan 'kode_pos' dengan nama kolom di tabel users lu (misal: postal_code atau kodepos)
+        // --- SATPAM VALIDASI ALAMAT ---
         if (empty($user->phone) || empty($user->address) || empty($user->postal_code)) {
-            // Tolak dan kembalikan ke halaman sebelumnya bawa pesan error
             return redirect()->back()->with('error', 'Checkout Gagal! Silakan lengkapi data profil Anda pada halaman Detail Profil terlebih dahulu!');
         }
-        // -----------------------
 
-        // 1. Simpan order beserta detail pengiriman
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total_price' => $totalPrice,
-            'status' => 'unpaid',
-            
-            // --- TAMBAHAN DATA ALAMAT PENGIRIMAN ---
-            'recipient_name' => $user->name,
-            
-            // Karena udah divalidasi di atas, kita kaga butuh lagi tanda ?? '-'
-            'phone_number' => $user->phone, 
-            
-            // Sekalian kita gabungin alamat sama kode pos biar admin gampang bacanya
-            'shipping_address' => $user->address . ', Kode Pos: ' . $user->postal_code, 
-        ]);
+        // ========================================================
+        // MULAI SISTEM PENGAMAN TRANSAKSI (PESSIMISTIC LOCKING)
+        // ========================================================
+        DB::beginTransaction();
 
-        foreach ($cart as $id => $details) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $id,
-                'quantity' => $details['quantity'],
-                'price' => $details['price'],
+        try {
+            // 4. Simpan order (Header)
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total_price' => $totalPrice,
+                'status' => 'unpaid',
+                'recipient_name' => $user->name,
+                'phone_number' => $user->phone, 
+                'shipping_address' => $user->address . ', Kode Pos: ' . $user->postal_code, 
             ]);
 
-            $product = Product::find($id);
-            if ($product) {
-                // Ngurangin stok barang
-                $product->decrement('stock', $details['quantity']);
+            // 5. Simpan item dan amankan stok (Detail)
+            foreach ($cartItems as $item) {
                 
-                // Nambahin angka terjual
-                $product->increment('sold', $details['quantity']);
+                // MENGUNCI BARIS PRODUK INI DI DATABASE AGAR TIDAK DIGANGGU USER LAIN
+                $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
+
+                if (!$product) {
+                    throw new Exception("Salah satu produk dalam keranjang tidak ditemukan.");
+                }
+
+                // PENGECEKAN FINAL: Apakah stok masih cukup tepat saat detik ini?
+                if ($product->stock < $item->quantity) {
+                    throw new Exception("Mohon maaf, stok " . $product->name . " tidak mencukupi. Sisa stok saat ini: " . $product->stock);
+                }
+
+                // Jika aman, masukkan ke histori Order Item
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $product->price, // Ambil harga dari produk langsung
+                ]);
+
+                // Ngurangin stok & Nambahin angka terjual
+                $product->decrement('stock', $item->quantity);
+                $product->increment('sold', $item->quantity);
             }
+
+            // JIKA SEMUA LANCAR, SIMPAN DATA SECARA PERMANEN
+            DB::commit();
+
+            // 6. Kosongkan keranjang di DATABASE (Bukan Session lagi)
+            Cart::where('user_id', Auth::id())->delete();
+
+            // 7. Arahkan langsung ke halaman pembayaran!
+            return redirect()->route('orders.payment', $order->id);
+
+        } catch (Exception $e) {
+            // JIKA ADA ERROR (MISAL STOK HABIS), BATALKAN SEMUA PERUBAHAN DATABASE!
+            DB::rollBack();
+
+            // Kembalikan user ke halaman keranjang bawa pesan error stoknya
+            return redirect()->back()->with('error', 'Checkout Gagal: ' . $e->getMessage());
         }
-
-        // Kosongkan keranjang setelah berhasil dibeli
-        session()->forget('cart');
-
-        // 2. Arahkan langsung ke halaman pembayaran!
-        return redirect()->route('orders.payment', $order->id);
     }
 }

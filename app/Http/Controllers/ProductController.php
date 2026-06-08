@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Product; // Jalur buat manggil gudang data produk
 use Illuminate\Http\Request;
 
@@ -9,6 +10,11 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $cartItems = [];
+        if (Auth::check()) {
+            // Mengambil array berupa [product_id => quantity] milik user yang sedang login
+            $cartItems = \App\Models\Cart::where('user_id', Auth::id())->pluck('quantity', 'product_id')->toArray();
+        }
         // 1. Mulai query produk DAN hitung rata-rata rating dari tabel reviews
         // Ini bikin Laravel otomatis nambahin data 'reviews_avg_rating' secara virtual
         $query = Product::withAvg('reviews', 'rating');
@@ -52,8 +58,8 @@ class ProductController extends Controller
         // Eksekusi query
         $products = $query->get();
         // $products = $query->paginate(8); 
-
-        return view('products.index', compact('products'));
+        
+        return view('products.index', compact('products', 'cartItems'));
     }
 
     // Tambahin fungsi ini buat nampilin Halaman Detail Produk

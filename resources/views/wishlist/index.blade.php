@@ -32,7 +32,6 @@
                                 <span>Wishlist Saya</span>
                             </a>
 
-
                             <div class="border-t border-gray-100"></div>
 
                             <a href="/produk" class="px-5 py-4 border-l-4 border-transparent text-gray-600 font-medium hover:bg-gray-50 hover:text-green-600 transition flex items-center space-x-3">
@@ -45,31 +44,34 @@
 
                 <div class="md:col-span-3 space-y-6">
                     
-                    @if(count($wishlist) > 0)
+                    {{-- UBAH: Cek ke variable object $wishlists --}}
+                    @if($wishlists->isNotEmpty())
                         <div class="bg-white overflow-hidden shadow sm:rounded-lg p-6 border border-gray-100">
                             <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-4 mb-4">Produk Tersimpan (Wishlist)</h3>
                             
                             <div class="divide-y divide-gray-200">
-                                @foreach($wishlist as $id => $details)
+                                {{-- UBAH: Looping dari object database --}}
+                                @foreach($wishlists as $item)
                                     <div class="flex flex-col sm:flex-row sm:items-center justify-between py-5 gap-4">
                                         <div class="flex items-center space-x-4">
-                                            <a href="{{ route('products.show', $details['slug'] ?? '') }}">
-                                                <img src="{{ asset('images/produk/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-24 h-24 object-cover rounded-lg border border-gray-100 hover:opacity-80 transition">
+                                            <a href="{{ route('products.show', $item->product->slug ?? '') }}">
+                                                <img src="{{ asset('images/produk/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-24 h-24 object-cover rounded-lg border border-gray-100 hover:opacity-80 transition">
                                             </a>
                                             <div>
-                                                <span class="text-xs text-gray-400 font-medium">{{ $details['category'] }}</span>
-                                                <a href="{{ route('products.show', $details['slug'] ?? '') }}" class="hover:text-primary transition">
-                                                    <h3 class="font-bold text-gray-800 text-base mb-1">{{ $details['name'] }}</h3>
+                                                <span class="text-xs text-gray-400 font-medium">{{ $item->product->category }}</span>
+                                                <a href="{{ route('products.show', $item->product->slug ?? '') }}" class="hover:text-primary transition">
+                                                    <h3 class="font-bold text-gray-800 text-base mb-1">{{ $item->product->name }}</h3>
                                                 </a>
-                                                <span class="font-bold text-primary text-sm block">Rp {{ number_format($details['price'], 0, ',', '.') }}</span>
+                                                <span class="font-bold text-primary text-sm block">Rp {{ number_format($item->product->price, 0, ',', '.') }}</span>
                                             </div>
                                         </div>
                                         
                                         <div class="flex items-center space-x-3 mt-2 sm:mt-0">
-                                            <a href="{{ route('wishlist.toggle', $id) }}" class="text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl transition">
+                                            {{-- UBAH: Menggunakan ID produk dari relasi --}}
+                                            <a href="{{ route('wishlist.toggle', $item->product_id) }}" class="text-red-500 hover:text-red-700 font-bold text-sm bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl transition">
                                                 Hapus
                                             </a>
-                                            <a href="{{ route('cart.add', $id) }}" class="bg-[#476024] text-white px-5 py-2 rounded-xl font-bold hover:bg-[#2d3e17] transition shadow-md text-sm whitespace-nowrap">
+                                            <a href="{{ route('cart.add', $item->product_id) }}" class="bg-[#476024] text-white px-5 py-2 rounded-xl font-bold hover:bg-[#2d3e17] transition shadow-md text-sm whitespace-nowrap">
                                                 + Keranjang
                                             </a>
                                         </div>

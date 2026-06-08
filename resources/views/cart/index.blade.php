@@ -56,31 +56,31 @@
                         </div>
                     @endif
 
-                    @if(count($cart) > 0)
+                    @if($cartItems->isNotEmpty())
                         <div class="bg-white overflow-hidden shadow sm:rounded-lg p-6 border border-gray-100">
                             
                             <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-4 mb-4">Daftar Belanjaan Anda</h3>
                             
                             <div class="divide-y divide-gray-200">
                                 @php $total = 0; @endphp
-                                @foreach($cart as $id => $details)
-                                    @php $total += $details['price'] * $details['quantity']; @endphp
+                                @foreach($cartItems as $item)
+                                    @php $total += $item->product->price * $item->quantity; @endphp
                                     
                                     <div class="flex items-center justify-between py-4">
                                         <div class="flex items-center space-x-4">
-                                            <img src="{{ asset('images/produk/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-20 h-20 object-cover rounded-lg border border-gray-100">
+                                            <img src="{{ asset('images/produk/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded-lg border border-gray-100">
                                             <div>
-                                                <span class="text-xs text-gray-400 font-medium">{{ $details['category'] }}</span>
-                                                <h3 class="font-bold text-gray-800 text-base">{{ $details['name'] }}</h3>
+                                                <span class="text-xs text-gray-400 font-medium">{{ $item->product->category }}</span>
+                                                <h3 class="font-bold text-gray-800 text-base">{{ $item->product->name }}</h3>
                                                 
                                                 <div class="flex items-center space-x-3 mt-2">
-                                                    <span class="text-sm text-gray-600 font-medium">Rp {{ number_format($details['price'], 0, ',', '.') }}</span>
+                                                    <span class="text-sm text-gray-600 font-medium">Rp {{ number_format($item->product->price, 0, ',', '.') }}</span>
                                                     <span class="text-gray-300">|</span>
                                                     
                                                     <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200">
-                                                        <a href="{{ route('cart.decrease', $id) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-200 hover:text-red-500 rounded-l-lg transition font-bold">-</a>
-                                                        <span class="px-3 py-1 text-sm font-bold text-gray-800 bg-white border-x border-gray-200">{{ $details['quantity'] }}</span>
-                                                        <a href="{{ route('cart.add', $id) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-200 hover:text-green-600 rounded-r-lg transition font-bold">+</a>
+                                                        <a href="{{ route('cart.decrease', $item->product_id) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-200 hover:text-red-500 rounded-l-lg transition font-bold">-</a>
+                                                        <span class="px-3 py-1 text-sm font-bold text-gray-800 bg-white border-x border-gray-200">{{ $item->quantity }}</span>
+                                                        <a href="{{ route('cart.add', $item->product_id) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-200 hover:text-green-600 rounded-r-lg transition font-bold">+</a>
                                                     </div>
                                                 </div>
 
@@ -88,7 +88,7 @@
                                         </div>
                                         <div class="text-right">
                                             <span class="font-bold text-primary text-base">
-                                                Rp {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}
+                                                Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
                                             </span>
                                         </div>
                                     </div>

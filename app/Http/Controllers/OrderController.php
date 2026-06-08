@@ -51,12 +51,12 @@ class OrderController extends Controller
                 'email' => auth()->user()->email,
                 'phone' => $order->phone_number,
             ),
-            
+
             // --- TAMBAHKAN INI BIAR SINKRON SAMA SCHEDULER ---
             'custom_expiry' => array(
                 'start_time' => date("Y-m-d H:i:s O", strtotime($order->created_at)),
-                'unit' => 'minute', 
-                'duration'  => 30 // Samakan dengan subMinutes(30) di scheduler
+                'unit' => 'hour', 
+                'duration'  => 24 // Samakan dengan subHours(24) di scheduler
             )
         );
 

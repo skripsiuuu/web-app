@@ -29,7 +29,7 @@ class CancelUnpaidOrders extends Command
     {
         // Mencari pesanan dengan status 'pending' (Belum Bayar) yang usianya lebih dari 30menit
         $expiredOrders = Order::where('status', 'unpaid')
-                              ->where('created_at', '<', Carbon::now()->subMinutes(30))
+                              ->where('created_at', '<', Carbon::now()->subHours(24))
                               ->get();
 
         $count = 0;
