@@ -24,12 +24,46 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
-    // 3. Nampilin Halaman Dummy Pembayaran
+    // 3. Nampilin Halaman Dummy Pembayaran (Midtrans)
     public function payment($id)
     {
-        // Cari pesanan yang milik user ini dan statusnya masih 'unpaid'
-        $order = Order::where('user_id', Auth::id())->where('status', 'unpaid')->findOrFail($id);
-        return view('orders.payment', compact('order'));
+        $order = \App\Models\Order::findOrFail($id);
+
+        // Pastikan pesanan milik user yang sedang login dan statusnya belum dibayar
+        if ($order->user_id !== auth()->id() || $order->status !== 'unpaid') {
+            abort(403, 'Akses tidak diizinkan atau pesanan sudah dibayar.');
+        }
+
+        // Konfigurasi Midtrans
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
+        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
+        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS');
+
+        // Setup parameter yang mau dikirim ke Midtrans
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => $order->id . '-' . time(), // Tambah time() biar unik jika user refresh
+                'gross_amount' => $order->total_price,
+            ),
+            'customer_details' => array(
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'phone' => $order->phone_number,
+            ),
+            
+            // --- TAMBAHKAN INI BIAR SINKRON SAMA SCHEDULER ---
+            'custom_expiry' => array(
+                'start_time' => date("Y-m-d H:i:s O", strtotime($order->created_at)),
+                'unit' => 'minute', 
+                'duration'  => 30 // Samakan dengan subMinutes(30) di scheduler
+            )
+        );
+
+        // Generate Snap Token
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        return view('orders.payment', compact('order', 'snapToken'));
     }
 
     // 4. Proses Tombol "Bayar Sekarang"
@@ -121,6 +155,69 @@ class OrderController extends Controller
         $reports = \App\Models\RefundReport::where('order_id', $order->id)->latest()->get();
 
         return view('orders.refund-history', compact('order', 'reports'));
+    }
+
+    /**
+     * Menangani notifikasi otomatis (Webhook) dari Midtrans.
+     */
+    public function callback(\Illuminate\Http\Request $request)
+    {
+        // Konfigurasi Kunci Midtrans
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
+        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
+        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS');
+
+        try {
+            // Menangkap notifikasi dari Midtrans
+            $notif = new \Midtrans\Notification();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Notifikasi tidak valid'], 400);
+        }
+
+        $transactionStatus = $notif->transaction_status;
+        $orderIdWithTime = $notif->order_id; // Mengambil kode unik, contoh: "1-1717750000"
+        
+        // Sesuai Tahap 4, kita memecah string berdasarkan tanda "-" untuk mengambil ID pesanan asli
+        $orderId = explode('-', $orderIdWithTime)[0];
+        
+        // Cari data pesanan di basis data
+        $order = \App\Models\Order::find($orderId);
+
+        if (!$order) {
+            return response()->json(['message' => 'Data pesanan tidak ditemukan'], 404);
+        }
+
+        // ... (Kode Midtrans API & pencarian $order di atasnya biarkan sama) ...
+
+        // Logika Perubahan Status Berdasarkan Respon Midtrans
+        if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
+            // Pembayaran Berhasil (Timpa status jadi paid)
+            $order->update(['status' => 'paid']);
+            
+        } elseif ($transactionStatus == 'pending') {
+            // Menunggu Pembayaran
+            // CEGAHAN: Jangan turunkan status jika pesanan sudah lunas/diproses
+            if (!in_array($order->status, ['paid', 'shipping', 'completed'])) {
+                $order->update(['status' => 'unpaid']);
+            }
+            
+        } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+            // Pembayaran Gagal / Kedaluwarsa / Dibatalkan
+            // CEGAHAN: Abaikan webhook "Batal" jika pesanan aslinya sudah lunas!
+            if (!in_array($order->status, ['paid', 'shipping', 'completed'])) {
+                $order->update(['status' => 'cancelled']);
+
+                // Kembalikan stok produk jika transaksi batal
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Webhook Midtrans berhasil diproses']);
     }
 
 }

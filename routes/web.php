@@ -128,6 +128,7 @@ Route::get('/dashboard', function () {
     return redirect()->route('profile.edit');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
 Route::middleware(['auth'])->group(function () {
     
     // Fitur Manajemen Profil Pengguna
@@ -146,8 +147,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{id}/payment', [OrderController::class, 'payment'])->name('orders.payment');
     Route::post('/orders/{id}/pay', [OrderController::class, 'pay'])->name('orders.pay');
     Route::post('/orders/{id}/complete', [OrderController::class, 'completeOrder'])->name('orders.complete');
-
-    // Fitur Pengajuan Refund (Baru)
+  
+    // Fitur Pengajuan Refund
     Route::get('/orders/{id}/refund', [OrderController::class, 'refundForm'])->name('orders.refund');
     Route::post('/orders/{id}/refund', [OrderController::class, 'processRefund'])->name('orders.refund.store');
 
@@ -182,6 +183,11 @@ Route::middleware(['auth'])->group(function () {
     });
     
 });
+
+// Rute untuk menerima notifikasi otomatis dari Midtrans
+Route::post('/midtrans/callback', [OrderController::class, 'callback'])->name('midtrans.callback');
+
+
 
 // Memuat rute bawaan milik Breeze
 require __DIR__.'/auth.php';

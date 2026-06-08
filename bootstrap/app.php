@@ -11,10 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // DAFTARKAN ALIAS SATPAM LU DI SINI
+        // DAFTARKAN ALIAS SATPAM DI SINI
         $middleware->alias([
             'is_admin' => \App\Http\Middleware\IsAdmin::class,
         ]);
+        
+        $middleware->validateCsrfTokens(except: [
+        '/midtrans/callback' // Tambahkan pengecualian rute ini
+        ]);
+        
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
