@@ -53,7 +53,8 @@
     <script type="text/javascript">
         // Fungsi untuk memanggil popup Midtrans
         function triggerMidtrans() {
-            window.snap.pay('{{ $snapToken }}', {
+            // MENGAMBIL SNAP TOKEN LANGSUNG DARI DATABASE
+            window.snap.pay('{{ $order->snap_token }}', {
                 onSuccess: function(result){
                     window.location.href = "{{ route('orders.show', $order->id) }}";
                 },

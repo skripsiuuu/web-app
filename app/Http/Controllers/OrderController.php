@@ -27,45 +27,50 @@ class OrderController extends Controller
     // 3. Nampilin Halaman Dummy Pembayaran (Midtrans)
     public function payment($id)
     {
-        $order = \App\Models\Order::findOrFail($id);
+        // Cari data order milik user yang sedang login
+        $order = \App\Models\Order::where('user_id', \Illuminate\Support\Facades\Auth::id())->findOrFail($id);
 
-        // Pastikan pesanan milik user yang sedang login dan statusnya belum dibayar
-        if ($order->user_id !== auth()->id() || $order->status !== 'unpaid') {
-            abort(403, 'Akses tidak diizinkan atau pesanan sudah dibayar.');
+        // 1. Cek apakah token sudah pernah dibuat sebelumnya di database
+        if (!$order->snap_token) {
+            
+            // Konfigurasi Midtrans
+            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            // SOLUSI PERTANYAAN 1: Buat Order ID Unik (Format: ID-Timestamp)
+            $unikOrderId = $order->id . '-' . time();
+
+            // Parameter wajib Midtrans
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $unikOrderId, // Gunakan ID Unik di sini
+                    'gross_amount' => $order->total_price,
+                ],
+                'customer_details' => [
+                    'first_name' => $order->recipient_name,
+                    // SOLUSI PERTANYAAN 2: Tambahkan baris email ini!
+                    'email' => \Illuminate\Support\Facades\Auth::user()->email,
+                    'phone' => $order->phone_number,
+                    'shipping_address' => [
+                        'first_name' => $order->recipient_name,
+                        'address' => $order->shipping_address,
+                    ]
+                ]
+            ];
+
+            // Minta Snap Token ke Midtrans
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+            // 2. Simpan token yang baru dibuat ke database secara permanen
+            $order->update(['snap_token' => $snapToken]);
         }
 
-        // Konfigurasi Midtrans
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
-        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
-        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS');
-
-        // Setup parameter yang mau dikirim ke Midtrans
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => $order->id . '-' . time(), // Tambah time() biar unik jika user refresh
-                'gross_amount' => $order->total_price,
-            ),
-            'customer_details' => array(
-                'first_name' => auth()->user()->name,
-                'email' => auth()->user()->email,
-                'phone' => $order->phone_number,
-            ),
-
-            // --- TAMBAHKAN INI BIAR SINKRON SAMA SCHEDULER ---
-            'custom_expiry' => array(
-                'start_time' => date("Y-m-d H:i:s O", strtotime($order->created_at)),
-                'unit' => 'hour', 
-                'duration'  => 24 // Samakan dengan subHours(24) di scheduler
-            )
-        );
-
-        // Generate Snap Token
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
-
-        return view('orders.payment', compact('order', 'snapToken'));
+        // 3. Lempar data order ke view
+        return view('orders.payment', compact('order'));
     }
-
+    
     // 4. Proses Tombol "Bayar Sekarang"
     public function pay($id)
     {
