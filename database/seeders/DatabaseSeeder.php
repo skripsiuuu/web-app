@@ -15,14 +15,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // 1. Bikin akun user default buat login/testing
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            // Kalau password ga di-set di sini, biasanya default-nya 'password'
         ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Admin Mitra Hidup Sehat',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+        ]);
+
+        // 2. Panggil data asli lu hasil dari iseed
         $this->call([
-        ProductSeeder::class,
+            ProductsTableSeeder::class,
+            ArticlesTableSeeder::class,
+            RecipesTableSeeder::class,
         ]);
+        $this->call(ProductsTableSeeder::class);
+        $this->call(ArticlesTableSeeder::class);
+        $this->call(RecipesTableSeeder::class);
     }
 }
