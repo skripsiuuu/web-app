@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Struk #{{ $order->id }}</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Struk #INV26-{{ $order->id }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -16,7 +16,7 @@
                 <div class="p-8 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
                     <div>
                         <h1 class="text-2xl font-black text-darkGreen">MITRA HIDUP SEHAT</h1>
-                        <p class="text-sm text-gray-500">Nomor Invoice: <strong>#{{ $order->id }}</strong></p>
+                        <p class="text-sm text-gray-500">Nomor Invoice: <strong>#INV26-{{ $order->id }}</strong></p>
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-500">Tanggal Transaksi:</p>
@@ -43,7 +43,6 @@
 
                                         @if($order->status == 'completed')
                                             @php
-                                                // Cek manual apakah ulasan sudah ada di database
                                                 $review = \App\Models\Review::where('order_id', $order->id)
                                                                             ->where('product_id', $item->product_id)
                                                                             ->first();
@@ -90,37 +89,67 @@
                     </table>
                 </div>
 
-                <div class="p-8 bg-gray-50 flex justify-between items-center">
-                    <p class="font-bold text-gray-500 uppercase tracking-widest text-sm">Total Pembayaran</p>
-                    <h2 class="text-3xl font-black text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h2>
+                <div class="p-8 bg-gray-50 border-t border-gray-100">
+                    <div class="flex justify-end">
+                        <div class="w-full max-w-sm space-y-3">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal Produk</span>
+                                <span class="font-medium">Rp {{ number_format($order->total_price - $order->shipping_cost - $order->admin_fee, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Ongkos Kirim</span>
+                                <span class="font-medium">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Biaya Admin</span>
+                                <span class="font-medium">Rp {{ number_format($order->admin_fee, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                                <span class="font-bold text-gray-800 uppercase tracking-widest text-sm">Total Pembayaran</span>
+                                <span class="text-2xl font-black text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
             <div class="mt-8 flex flex-col items-center justify-center space-y-4">
                 
+                @if($order->status == 'paid')
+                    <a href="{{ route('orders.cancel', $order->id) }}" class="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition shadow-sm w-full max-w-xs text-center">
+                        Batalkan Pesanan
+                    </a>
+                @elseif($order->status == 'cancel_processing')
+                    <div class="w-full max-w-lg bg-orange-50 border border-orange-200 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-sm font-bold text-orange-800 mb-1">Status: Proses Pembatalan</p>
+                        <p class="text-xs text-orange-700">Alasan: {{ $order->cancel_reason }}</p>
+                        <p class="text-xs text-orange-600 mt-2">Menunggu pengembalian dana dari tim kami (Maks 1x24 Jam Kerja).</p>
+                    </div>
+                @elseif($order->status == 'cancelled')
+                    <div class="w-full max-w-lg bg-red-50 border border-red-200 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-sm font-bold text-red-800">Pesanan Dibatalkan</p>
+                        <p class="text-xs text-red-600 mt-1">Status: Dana telah dikembalikan kepada Anda.</p>
+                    </div>
+                @endif
+
                 @php
                     $latestReport = \App\Models\RefundReport::where('order_id', $order->id)->latest()->first();
                 @endphp
 
                 @if($order->status == 'completed')
                     @if($latestReport)
-                        <a href="{{ route('orders.refund.history', $order->id) }}" class="px-6 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm">
-                            Lihat Riwayat Laporan
+                        <a href="{{ route('orders.refund.history', $order->id) }}" class="px-6 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm w-full max-w-xs text-center">
+                            Liat Riwayat Laporan
                         </a>
-                        
-                        <!-- @if($latestReport->status == 'revisi')
-                            <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-orange-50 text-orange-600 border border-orange-200 rounded-lg text-sm font-bold hover:bg-orange-600 hover:text-white transition shadow-sm">
-                                🔄 Perbaiki & Ajukan Ulang Keluhan
-                            </a>
-                        @endif -->
                     @else
-                        <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition shadow-sm">
-                            Ajukan Keluhan / Pengembalian Dana
+                        <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition shadow-sm w-full max-w-xs text-center">
+                            Ajukan Pengembalian Dana
                         </a>
                     @endif
                 @endif
 
-                <a href="{{ route('orders.index') }}" class="text-sm text-gray-500 hover:text-[#476024] font-medium underline transition">
+                <a href="{{ route('orders.index') }}" class="text-sm text-gray-500 hover:text-[#476024] font-medium underline transition pt-2">
                     Kembali ke Riwayat Pesanan
                 </a>
                 

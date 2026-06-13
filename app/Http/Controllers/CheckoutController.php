@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\Cart; // Tambahkan ini buat manggil tabel Cart
+use App\Models\Cart; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +15,7 @@ class CheckoutController extends Controller
 {
     public function process()
     {
-        // 1. Ambil data keranjang dari DATABASE, bukan session lagi
+        // 1. Ambil data keranjang dari DATABASE
         $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
 
         // 2. Cek apakah keranjang kosong
@@ -23,11 +23,16 @@ class CheckoutController extends Controller
             return redirect()->back()->with('error', 'Keranjang Anda masih kosong');
         }
 
-        // 3. Hitung Total Harga dari database
-        $totalPrice = 0;
+        // 3. HITUNG SUB TOTAL DULU (Taruh di atas biar PHP tau angkanya)
+        $sub_total = 0;
         foreach ($cartItems as $item) {
-            $totalPrice += $item->product->price * $item->quantity;
+            $sub_total += $item->product->price * $item->quantity;
         }
+
+        // 4. Hitung Total Akhir dengan Ongkir & Admin
+        $shipping_cost = 1; // Contoh Ongkir
+        $admin_fee = 1;      // Contoh Biaya Admin
+        $totalPrice = $sub_total + $shipping_cost + $admin_fee;
 
         $user = Auth::user();
 
@@ -42,17 +47,19 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            // 4. Simpan order (Header)
+            // 5. Simpan order (Header) - WAJIB MASUKIN ONGKIR & ADMIN
             $order = Order::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
+                'shipping_cost' => $shipping_cost, // <-- Tambahan Wajib
+                'admin_fee' => $admin_fee,         // <-- Tambahan Wajib
                 'status' => 'unpaid',
                 'recipient_name' => $user->name,
                 'phone_number' => $user->phone, 
                 'shipping_address' => $user->address . ', Kode Pos: ' . $user->postal_code, 
             ]);
 
-            // 5. Simpan item dan amankan stok (Detail)
+            // 6. Simpan item dan amankan stok (Detail)
             foreach ($cartItems as $item) {
                 
                 // MENGUNCI BARIS PRODUK INI DI DATABASE AGAR TIDAK DIGANGGU USER LAIN
@@ -72,7 +79,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $product->price, // Ambil harga dari produk langsung
+                    'price' => $product->price, 
                 ]);
 
                 // Ngurangin stok & Nambahin angka terjual
@@ -83,10 +90,10 @@ class CheckoutController extends Controller
             // JIKA SEMUA LANCAR, SIMPAN DATA SECARA PERMANEN
             DB::commit();
 
-            // 6. Kosongkan keranjang di DATABASE (Bukan Session lagi)
+            // 7. Kosongkan keranjang di DATABASE
             Cart::where('user_id', Auth::id())->delete();
 
-            // 7. Arahkan langsung ke halaman pembayaran!
+            // 8. Arahkan langsung ke halaman pembayaran!
             return redirect()->route('orders.payment', $order->id);
 
         } catch (Exception $e) {

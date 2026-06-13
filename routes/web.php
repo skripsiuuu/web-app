@@ -159,6 +159,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/orders/{id}/refund-history', [OrderController::class, 'refundHistory'])->name('orders.refund.history');
 
+    Route::get('/orders/{id}/cancel', [App\Http\Controllers\OrderController::class, 'cancelForm'])->name('orders.cancel');
+    Route::post('/orders/{id}/cancel', [App\Http\Controllers\OrderController::class, 'processCancel'])->name('orders.processCancel');
+
     // =============================================================
     // KELOMPOK RUTE KHUSUS ADMIN
     // =============================================================
@@ -172,6 +175,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
         Route::post('/admin/products/{id}/update', [AdminController::class, 'updateProduct'])->name('admin.products.update');
         Route::delete('/admin/products/{id}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+        Route::post('/admin/orders/{id}/refund', [App\Http\Controllers\AdminController::class, 'confirmRefundCancel'])->name('admin.orders.refund');
         
         // Rute untuk Kelola Pengguna
         Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');

@@ -9,33 +9,29 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    // 1. Nampilin semua daftar pesanan user
     public function index()
     {
         $orders = Order::where('user_id', Auth::id())->latest()->get();
         return view('orders.index', compact('orders'));
     }
 
-    // 2. Nampilin detail satu struk belanja (Invoice) + AUTO CEK STATUS MIDTRANS
     public function show($id)
     {
         $order = Order::with('items.product')->where('user_id', Auth::id())->findOrFail($id);
 
-        // --- JURUS BYPASS: LARAVEL NANYA LANGSUNG KE MIDTRANS ---
+        // JURUS BYPASS CEK STATUS KE MIDTRANS
         if ($order->status == 'unpaid' && $order->snap_token) {
             \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
             \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
             try {
-                // Tarik status terbaru langsung dari API Midtrans
-                $status = \Midtrans\Transaction::status($order->id);
+                // MENGGUNAKAN PREFIX INV26- SESUAI TAHUN 2026
+                $status = \Midtrans\Transaction::status('INV26-' . $order->id);
 
-                // Ubah status di database sesuai jawaban Midtrans
                 if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
                     $order->update(['status' => 'paid']);
                 } elseif (in_array($status->transaction_status, ['deny', 'expire', 'cancel'])) {
                     $order->update(['status' => 'cancelled']);
-                    // Kembalikan stok produk jika transaksi gagal/batal
                     foreach ($order->items as $item) {
                         if ($item->product) {
                             $item->product->increment('stock', $item->quantity);
@@ -43,21 +39,18 @@ class OrderController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                // Abaikan saja kalau transaksinya belum terdaftar/dibuat di Midtrans
+                // Abaikan jika belum ada di Midtrans
             }
         }
-        // --------------------------------------------------------
 
         return view('orders.show', compact('order'));
     }
 
-    // 3. Nampilin Halaman Dummy Pembayaran (Midtrans)
     public function payment($id)
     {
         $order = \App\Models\Order::where('user_id', \Illuminate\Support\Facades\Auth::id())->findOrFail($id);
 
         if (!$order->snap_token) {
-            
             \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
             \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
             \Midtrans\Config::$isSanitized = true;
@@ -65,9 +58,9 @@ class OrderController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    // PENTING: Gunakan ID asli tanpa ada tambahan time() di belakangnya
-                    'order_id' => $order->id, 
-                    'gross_amount' => $order->total_price,
+                    // MENGGUNAKAN PREFIX INV26-
+                    'order_id' => 'INV26-' . $order->id, 
+                    'gross_amount' => $order->total_price, // Total harga otomatis sudah termasuk ongkir & admin
                 ],
                 'customer_details' => [
                     'first_name' => $order->recipient_name,
@@ -87,7 +80,6 @@ class OrderController extends Controller
         return view('orders.payment', compact('order'));
     }
     
-    // 4. Proses Tombol "Bayar Sekarang" (Bila dibutuhkan manual)
     public function pay($id)
     {
         $order = Order::where('user_id', Auth::id())->where('status', 'unpaid')->findOrFail($id);
@@ -95,45 +87,56 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Pembayaran Berhasil! Pesanan Anda akan dikonfirmasi oleh Admin.');
     }
 
-    // 5. Proses Tombol "Pesanan Diterima" oleh Pembeli
     public function completeOrder($id)
     {
         $order = Order::where('user_id', Auth::id())->where('status', 'shipping')->findOrFail($id);
         $order->update(['status' => 'completed']);
-        return redirect()->back()->with('success', 'Mantap! Pesanan Anda sudah selesai. Yuk, kasih rating dan ulasan produk kami!');
+        return redirect()->back()->with('success', 'Pesanan selesai. Terima kasih!');
     }
 
+    // --- FITUR BARU: PEMBATALAN PESANAN ---
+    public function cancelForm($id)
+    {
+        $order = Order::where('user_id', Auth::id())->where('status', 'paid')->findOrFail($id);
+        return view('orders.cancel', compact('order'));
+    }
+
+    public function processCancel(Request $request, $id)
+    {
+        $order = Order::where('user_id', Auth::id())->where('status', 'paid')->findOrFail($id);
+
+        $request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $reason = $request->reason === 'Lainnya' ? $request->other_reason : $request->reason;
+
+        $order->update([
+            'status' => 'cancel_processing',
+            'cancel_reason' => $reason
+        ]);
+
+        return redirect()->route('orders.show', $order->id)->with('success', 'Pengajuan pembatalan berhasil. Dana akan segera diproses.');
+    }
+    // --------------------------------------
+
+    // --- FITUR LAMA: REFUND BARANG ---
     public function refundForm($id)
     {
-        $order = \App\Models\Order::findOrFail($id);
-
-        if ($order->user_id !== auth()->id()) {
-            abort(403, 'Akses tidak diizinkan.');
-        }
-        if ($order->status !== 'completed') {
-            return redirect()->route('orders.show', $order->id)->with('error', 'Pengajuan pengembalian dana hanya berlaku untuk pesanan yang telah selesai.');
-        }
-
+        $order = Order::findOrFail($id);
+        if ($order->user_id !== auth()->id()) abort(403);
+        if ($order->status !== 'completed') return redirect()->route('orders.show', $order->id)->with('error', 'Hanya untuk pesanan selesai.');
         return view('orders.refund', compact('order'));
     }
 
-    public function processRefund(\Illuminate\Http\Request $request, $id)
+    public function processRefund(Request $request, $id)
     {
-        $order = \App\Models\Order::findOrFail($id);
-
-        if ($order->user_id !== auth()->id()) {
-            abort(403, 'Akses tidak diizinkan.');
-        }
+        $order = Order::findOrFail($id);
+        if ($order->user_id !== auth()->id()) abort(403);
 
         $request->validate([
             'description' => 'required|string|min:10',
-            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048', 
-        ], [
-            'description.required' => 'Penjelasan keluhan wajib diisi.',
-            'description.min' => 'Penjelasan harus terdiri dari minimal 10 karakter.',
-            'proof_image.required' => 'Bukti foto wajib diunggah.',
-            'proof_image.image' => 'Berkas harus berupa gambar.',
-            'proof_image.max' => 'Ukuran foto maksimal adalah 2MB.',
+            'proof_image' => 'required|image|max:2048', 
         ]);
 
         $imagePath = $request->file('proof_image')->store('refunds', 'public');
@@ -146,30 +149,22 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('orders.show', $order->id)->with('success', 'Laporan pengajuan pengembalian dana berhasil dikirim. Mohon tunggu konfirmasi dari pihak kami.');
+        return redirect()->route('orders.show', $order->id)->with('success', 'Laporan pengembalian dana berhasil dikirim.');
     }
     
     public function refundHistory($id)
     {
-        $order = \App\Models\Order::findOrFail($id);
-
-        if ($order->user_id !== auth()->id()) {
-            abort(403, 'Akses tidak diizinkan.');
-        }
-
-        $reports = \App\Models\RefundReport::where('order_id', $order->id)->latest()->get();
-
+        $order = Order::findOrFail($id);
+        if ($order->user_id !== auth()->id()) abort(403);
+        $reports = RefundReport::where('order_id', $order->id)->latest()->get();
         return view('orders.refund-history', compact('order', 'reports'));
     }
 
-    // Fungsi callback tetap dibiarkan jaga-jaga kalau suatu saat web lu pindah ke hosting berbayar
-    public function callback(\Illuminate\Http\Request $request)
+    public function callback(Request $request)
     {
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
-        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
-        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS');
-
+        
         try {
             $notif = new \Midtrans\Notification();
         } catch (\Exception $e) {
@@ -177,14 +172,13 @@ class OrderController extends Controller
         }
 
         $transactionStatus = $notif->transaction_status;
-        $orderIdWithTime = $notif->order_id; 
+        $orderIdWithPrefix = $notif->order_id; 
         
-        $orderId = explode('-', $orderIdWithTime)[0];
+        // Membersihkan awalan INV26- untuk mendapatkan ID asli
+        $orderId = str_replace('INV26-', '', $orderIdWithPrefix);
         $order = \App\Models\Order::find($orderId);
 
-        if (!$order) {
-            return response()->json(['message' => 'Data pesanan tidak ditemukan'], 404);
-        }
+        if (!$order) return response()->json(['message' => 'Data pesanan tidak ditemukan'], 404);
 
         if ($transactionStatus == 'settlement' || $transactionStatus == 'capture') {
             $order->update(['status' => 'paid']);
@@ -202,7 +196,6 @@ class OrderController extends Controller
                 }
             }
         }
-
         return response()->json(['message' => 'Webhook Midtrans berhasil diproses']);
     }
 }

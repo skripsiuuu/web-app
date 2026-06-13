@@ -66,13 +66,14 @@
                             
                             <div class="flex flex-col min-w-[200px]">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">Invoice: #{{ $order->id }}</span>
+                                    <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">#INV26-{{ $order->id }}</span>
                                     
                                     <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md
                                         {{ $order->status == 'unpaid' ? 'bg-red-50 text-red-600 border border-red-100' : '' }}
                                         {{ $order->status == 'paid' ? 'bg-blue-50 text-blue-600 border border-blue-100' : '' }}
                                         {{ $order->status == 'shipping' ? 'bg-purple-50 text-purple-600 border border-purple-100' : '' }}
                                         {{ $order->status == 'completed' ? 'bg-green-50 text-[#476024] border border-green-200' : '' }}
+                                        {{ $order->status == 'cancel_processing' ? 'bg-orange-50 text-orange-600 border border-orange-100' : '' }}
                                         {{ $order->status == 'cancelled' ? 'bg-gray-100 text-gray-500 border border-gray-200' : '' }}">
                                         
                                         @if($order->status == 'unpaid')
@@ -83,8 +84,10 @@
                                             Dikirim
                                         @elseif($order->status == 'completed')
                                             Selesai
+                                        @elseif($order->status == 'cancel_processing')
+                                            Proses Pembatalan
                                         @elseif($order->status == 'cancelled')
-                                            Batal Otomatis
+                                            Dibatalkan
                                         @else
                                             {{ $order->status }}
                                         @endif

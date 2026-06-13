@@ -16,6 +16,9 @@ class Order extends Model
         'recipient_name',
         'phone_number',
         'shipping_address',
+        'cancel_reason',  
+        'shipping_cost',  
+        'admin_fee',
         'snap_token'
         ];
 
@@ -23,5 +26,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

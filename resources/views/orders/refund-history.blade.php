@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Riwayat Laporan Invoice #{{ $order->id }}</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Riwayat Laporan #INV26-{{ $order->id }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -69,7 +69,7 @@
                     </div>
                 @elseif($reports->first()->status == 'approved')
                     <div class="bg-green-50 border border-green-200 p-6 rounded-xl text-center shadow-sm mt-6">
-                        <p class="text-sm text-green-800 font-medium">Laporan pengajuan pengembalian dana Anda telah disetujui. Proses pengembalian dana sedang ditindaklanjuti oleh tim kami. Terima kasih atas kesabaran Anda.</p>
+                        <p class="text-sm text-green-800 font-medium">Laporan pengajuan pengembalian dana Anda telah disetujui. Proses pengembalian dana sedang ditindaklanjuti oleh tim kami. Dana dikembalikan paling lambat 2 x hari kerja. Terima kasih atas kesabaran Anda.</p>
                     </div>
                 @endif
             @endif

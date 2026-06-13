@@ -12,8 +12,12 @@ class AdminController extends Controller
     // 1. Tampilkan semua pesanan masuk di panel admin
     public function orders()
     {
-        // Mengambil pesanan yang sudah dibayar (paid) atau yang sedang dikirim (shipping)
-        $orders = Order::with('items.product')->latest()->get();
+        // Menampilkan pesanan yang lunas (paid), dikirim (shipping), minta batal (cancel_processing), atau udah batal (cancelled)
+        $orders = Order::with('items.product')
+            ->whereIn('status', ['paid', 'shipping', 'cancel_processing', 'cancelled', 'completed'])
+            ->latest()
+            ->get();
+            
         return view('admin.orders', compact('orders'));
     }
 
@@ -25,8 +29,35 @@ class AdminController extends Controller
         // Ubah status jadi 'shipping' (sedang dikirim)
         $order->update(['status' => 'shipping']);
 
-        return redirect()->back()->with('success', 'Pesanan #' . $id . ' berhasil dikonfirmasi dan sedang dikirim!');
+        return redirect()->back()->with('success', 'Pesanan #INV26-' . $id . ' berhasil dikonfirmasi dan sedang dikirim!');
     }
+
+    // =======================================================
+    // FITUR BARU: KONFIRMASI PENGEMBALIAN DANA PEMBATALAN
+    // =======================================================
+    public function confirmRefundCancel($id)
+    {
+        // Hanya cari pesanan yang statusnya sedang 'cancel_processing'
+        $order = Order::where('status', 'cancel_processing')->findOrFail($id);
+        
+        // Ubah status jadi batal resmi
+        $order->update(['status' => 'cancelled']);
+
+        // Kembalikan stok barang ke etalase
+        foreach ($order->items as $item) {
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+                
+                // (Opsional) Kurangin angka terjual (sold) karena barangnya batal dibeli
+                if ($item->product->sold >= $item->quantity) {
+                    $item->product->decrement('sold', $item->quantity);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Dana telah dikonfirmasi kembali dan pesanan resmi dibatalkan.');
+    }
+    // =======================================================
 
     // 3. Tampilkan daftar produk untuk kelola stok
     public function products()
@@ -59,7 +90,6 @@ class AdminController extends Controller
     // 6. Proses simpan produk dan upload gambar
     public function storeProduct(Request $request)
     {
-        // Validasi input dari admin
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
@@ -68,18 +98,14 @@ class AdminController extends Controller
             'stock' => 'required|integer|min:0',
             'description' => 'required|string',
             'advantages' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Maksimal 2MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', 
         ]);
 
-        // Proses Upload Gambar
         $imageName = time() . '_' . $request->image->getClientOriginalName();
-        // Pindahkan gambar dari memori sementara ke folder public/images/produk
         $request->image->move(public_path('images/produk'), $imageName);
 
-        // Bikin URL ramah (slug) otomatis dari nama produk
         $slug = Str::slug($request->name) . '-' . time();
 
-        // Simpan semua data ke database
         Product::create([
             'name' => $request->name,
             'slug' => $slug,
@@ -112,20 +138,17 @@ class AdminController extends Controller
             'weight' => 'required|string|max:255',
             'description' => 'required|string',
             'advantages' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Di sini dibuat nullable (boleh kosong)
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', 
         ]);
 
         $product = Product::findOrFail($id);
-        $imageName = $product->image; // Default pakai gambar lama
+        $imageName = $product->image; 
 
-        // Jika admin mengunggah gambar baru
         if ($request->hasFile('image')) {
-            // Hapus fisik gambar lama dari folder public agar tidak menumpuk sampah
             if (file_exists(public_path('images/produk/' . $product->image))) {
                 @unlink(public_path('images/produk/' . $product->image));
             }
             
-            // Upload gambar baru
             $imageName = time() . '_' . $request->image->getClientOriginalName();
             $request->image->move(public_path('images/produk'), $imageName);
         }
@@ -151,7 +174,6 @@ class AdminController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        // Hapus fisik gambar dari folder public
         if (file_exists(public_path('images/produk/' . $product->image))) {
             @unlink(public_path('images/produk/' . $product->image));
         }
@@ -160,10 +182,10 @@ class AdminController extends Controller
 
         return redirect()->route('admin.products')->with('success', 'Produk berhasil dihapus dari katalog.');
     }
+
     // 10. Nampilin Halaman Kelola Pelanggan
     public function users()
     {
-        // Ambil semua user kecuali admin itu sendiri
         $users = \App\Models\User::where('role', '!=', 'admin')->orderBy('created_at', 'desc')->get();
         return view('admin.users', compact('users'));
     }
@@ -176,12 +198,12 @@ class AdminController extends Controller
         
         return redirect()->back()->with('success', 'User berhasil dihapus dari sistem!');
     }
-    // 12. halaman tinjauan perilaku pengguna (riwayat ulasan, dll).
+
+    // 12. halaman tinjauan perilaku pengguna
     public function userBehavior($id)
     {
         $user = \App\Models\User::findOrFail($id);
         
-        // Mengambil riwayat ulasan melalui relasi pesanan (Order) milik pengguna
         $reviews = \App\Models\Review::with('product')
             ->whereHas('order', function ($query) use ($id) {
                 $query->where('user_id', $id);
@@ -195,9 +217,7 @@ class AdminController extends Controller
     // 13. Nampilin Halaman Laporan Sementara
     public function reports()
     {
-        // Tarik semua laporan refund, diurutkan dari yang paling baru
         $reports = \App\Models\RefundReport::with(['user', 'order'])->orderBy('created_at', 'desc')->get();
-        
         return view('admin.reports', compact('reports'));
     }
 

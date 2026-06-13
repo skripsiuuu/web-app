@@ -23,18 +23,31 @@
                 <div class="text-center mb-8 pb-8 border-b border-gray-100">
                     <h3 class="text-gray-500 font-bold tracking-widest text-sm uppercase mb-2">Total Tagihan</h3>
                     <h1 class="text-4xl font-black text-[#476024]">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h1>
-                    <p class="text-xs text-gray-400 mt-2">Invoice: #{{ $order->id }}</p>
+                    <p class="text-xs text-gray-400 mt-2">#INV26-{{ $order->id }}</p>
                 </div>
                 
                 <div class="mb-8">
                     <h4 class="text-sm font-bold text-gray-800 mb-4">Rincian Pembelian:</h4>
                     <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
+                        
                         @foreach($order->items as $item)
-                            <div class="flex justify-between items-center mb-2 last:mb-0">
+                            <div class="flex justify-between items-center mb-2">
                                 <span>{{ $item->product->name ?? 'Produk' }} (x{{ $item->quantity }})</span>
-                                <span class="font-bold">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
+                                <span class="font-bold text-gray-800">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
                             </div>
                         @endforeach
+
+                        <div class="border-t border-gray-200 pt-3 mt-3 space-y-2">
+                            <div class="flex justify-between text-gray-500 text-xs">
+                                <span>Ongkos Kirim</span>
+                                <span>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-500 text-xs">
+                                <span>Biaya Admin</span>
+                                <span>Rp {{ number_format($order->admin_fee, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

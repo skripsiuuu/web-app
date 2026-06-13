@@ -20,6 +20,12 @@ return new class extends Migration
             $table->integer('total_price');
             // Status pesanan: pending, success, dibatalkan, dll
             $table->string('status')->default('pending');
+            
+            $table->string('cancel_reason')->nullable(); 
+            $table->integer('shipping_cost')->default(0); 
+            $table->integer('admin_fee')->default(0);
+
+
             $table->timestamps();
         });
         DB::statement('ALTER TABLE orders AUTO_INCREMENT = 100001;');
