@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('refund_reports', function (Blueprint $table) {
             $table->text('admin_feedback')->nullable()->after('status');
+            $table->string('admin_refund_proof')->nullable();
         });
     }
 

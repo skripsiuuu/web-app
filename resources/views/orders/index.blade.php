@@ -22,7 +22,7 @@
             
             @if(session('success'))
                 <div class="mb-6 bg-green-50 border border-green-200 text-[#476024] px-4 py-3 rounded-xl shadow-sm flex items-center gap-3">
-                    <span class="text-lg">✅</span>
+                    <span class="text-lg"></span>
                     <span class="font-medium text-sm">{{ session('success') }}</span>
                 </div>
             @endif

@@ -185,14 +185,14 @@
             <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image:linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Telur ayam probiotik.png') }}');">
                 <h3 class="font-bold text-lg mb-2">Telur Ayam Organik</h3>
                 <p class="text-xs text-gray-300 mb-4">Telur organik merupakan produk telur yang telah melewati serangkaian proses...</p>
-                <a href="/produk" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
+                <a href="/produk?category=Telur%20Organik" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
             </div>
 
             <!-- Kartu 2: Ayam Organik -->
             <div class="relative rounded-xl overflow-hidden shadow-lg h-[300px] flex flex-col justify-end p-6 text-white text-left bg-cover bg-center" style="background-image: linear-gradient(transparent, rgba(0,0,0,0.8)), url('{{ asset('images/tentangkami/4/Ayam sehat organik.png') }}');">
                 <h3 class="font-bold text-lg mb-2">Ayam Probiotik</h3>
                 <p class="text-xs text-gray-300 mb-4">Ayam potong segar organik, yang kami jaga sebaik mungkin dengan proses untuk menjamin...</p>
-                <a href="/produk" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
+                <a href="/produk?category=Ayam%20Probiotik" class="bg-white text-[#476024] text-xs font-semibold px-4 py-2 rounded self-start hover:bg-gray-100 transition">Lihat Produk</a>
             </div>
 
         </div>

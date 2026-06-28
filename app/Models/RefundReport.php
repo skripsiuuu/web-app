@@ -9,7 +9,14 @@ class RefundReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'order_id', 'description', 'proof_image', 'status', 'admin_feedback'];
+    protected $fillable = ['user_id', 
+    'order_id', 
+    'description', 
+    'proof_image', 
+    'status', 
+    'admin_feedback',
+    'admin_refund_proof'
+    ];
     
     // Relasi ke User (Laporan ini punya siapa)
     public function user()

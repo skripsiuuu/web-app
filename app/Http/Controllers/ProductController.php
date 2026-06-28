@@ -74,7 +74,7 @@ class ProductController extends Controller
         $averageRating = number_format($averageRating, 1);
 
         // 3. Ambil total terjual (Biar $totalSold di baris 45 ngga error)
-        // Kita pakai kolom 'sold' yang udah lu tambahin di database tadi
+        // pakai kolom 'sold' yang udah ditambahin di database tadi
         $totalSold = $product->sold;
 
         // 4. Lempar SEMUA variabelnya ke halaman show.blade.php

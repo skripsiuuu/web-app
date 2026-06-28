@@ -13,18 +13,30 @@
             @endif
 
             <div class="bg-white shadow sm:rounded-xl overflow-hidden border border-gray-100">
-                <div class="p-8 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                <!-- Bagian Kop Surat -->
+                <div class="p-8 bg-gray-50 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-black text-darkGreen">MITRA HIDUP SEHAT</h1>
                         <p class="text-sm text-gray-500">Nomor Invoice: <strong>#INV26-{{ $order->id }}</strong></p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-left md:text-right">
                         <p class="text-sm text-gray-500">Tanggal Transaksi:</p>
                         <p class="font-bold text-gray-800">{{ $order->created_at->format('d F Y') }}</p>
                     </div>
                 </div>
 
-                <div class="p-8">
+                <!-- INFO PENGIRIMAN (FITUR BARU) -->
+                <div class="px-8 pt-8 pb-2">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Informasi Pengiriman</h3>
+                    <div class="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+                        <p class="text-sm font-bold text-gray-800 mb-1">{{ $order->recipient_name }}</p>
+                        <p class="text-sm text-gray-600 mb-2">{{ $order->phone_number }}</p>
+                        <p class="text-sm text-gray-600 leading-relaxed">{{ $order->shipping_address }}</p>
+                    </div>
+                </div>
+
+                <!-- Bagian Tabel Produk -->
+                <div class="px-8 pb-8 pt-4">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
@@ -89,6 +101,7 @@
                     </table>
                 </div>
 
+                <!-- Bagian Rincian Pembayaran -->
                 <div class="p-8 bg-gray-50 border-t border-gray-100">
                     <div class="flex justify-end">
                         <div class="w-full max-w-sm space-y-3">
@@ -114,6 +127,7 @@
 
             </div>
 
+            <!-- Area Tombol Aksi Bawah -->
             <div class="mt-8 flex flex-col items-center justify-center space-y-4">
                 
                 @if($order->status == 'paid')
@@ -130,6 +144,13 @@
                     <div class="w-full max-w-lg bg-red-50 border border-red-200 p-4 rounded-xl text-center shadow-sm">
                         <p class="text-sm font-bold text-red-800">Pesanan Dibatalkan</p>
                         <p class="text-xs text-red-600 mt-1">Status: Dana telah dikembalikan kepada Anda.</p>
+                        
+                        <!-- TOMBOL BUKTI TRANSFER (BATAL PESANAN) -->
+                        @if($order->refund_proof)
+                            <a href="{{ asset('images/refunds/' . $order->refund_proof) }}" target="_blank" class="inline-block mt-3 px-4 py-2 bg-white text-red-700 text-xs font-bold rounded border border-red-200 hover:bg-red-100 transition shadow-sm">
+                                Lihat Bukti Pengembalian Dana
+                            </a>
+                        @endif
                     </div>
                 @endif
 
@@ -140,8 +161,19 @@
                 @if($order->status == 'completed')
                     @if($latestReport)
                         <a href="{{ route('orders.refund.history', $order->id) }}" class="px-6 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm w-full max-w-xs text-center">
-                            Liat Riwayat Laporan
+                            Lihat Riwayat Laporan
                         </a>
+
+                        <!-- INFO KOMPLAIN & TOMBOL BUKTI TRANSFER (JIKA APPROVED) -->
+                        @if($latestReport->status == 'approved' && $latestReport->admin_refund_proof)
+                            <div class="w-full max-w-lg bg-green-50 border border-green-200 p-4 rounded-xl text-center shadow-sm mt-4">
+                                <p class="text-sm font-bold text-green-800 mb-1">Komplain Selesai & Disetujui</p>
+                                <p class="text-xs text-green-700">Pengajuan komplain selesai. Dana/Uang kompensasi berhasil dikirim. Mohon maaf atas ketidaknyamanan Anda</p>
+                                <a href="{{ asset('images/refunds/' . $latestReport->admin_refund_proof) }}" target="_blank" class="inline-block mt-3 px-4 py-2 bg-white text-green-700 text-xs font-bold rounded border border-green-200 hover:bg-green-100 transition shadow-sm">
+                                    Lihat Bukti Pengembalian Dana
+                                </a>
+                            </div>
+                        @endif
                     @else
                         <a href="{{ route('orders.refund', $order->id) }}" class="px-6 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold hover:bg-red-600 hover:text-white transition shadow-sm w-full max-w-xs text-center">
                             Ajukan Pengembalian Dana

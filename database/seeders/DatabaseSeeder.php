@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // 2. Panggil data asli lu hasil dari iseed
+        // 2. Panggil data asli hasil dari iseed
         $this->call([
             ProductsTableSeeder::class,
             ArticlesTableSeeder::class,

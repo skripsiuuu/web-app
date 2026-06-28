@@ -19,7 +19,7 @@ class ArticleController extends Controller
         // Ambil data artikel, urutkan dari terbaru, dan kasih pagination (misal 9 per halaman)
         $articles = $query->latest()->paginate(9);
 
-        // Kirim data $articles ke view lu
+        // Kirim data $articles ke view
         return view('informasi.gaya-hidup', compact('articles'));
     }
 

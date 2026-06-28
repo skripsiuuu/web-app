@@ -16,7 +16,8 @@ class Order extends Model
         'recipient_name',
         'phone_number',
         'shipping_address',
-        'cancel_reason',  
+        'cancel_reason',
+        'refund_proof',  
         'shipping_cost',  
         'admin_fee',
         'snap_token'

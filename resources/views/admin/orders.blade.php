@@ -92,8 +92,12 @@
                                     <p class="text-xs text-orange-700 italic">"{{ $order->cancel_reason }}"</p>
                                 </div>
 
-                                <form action="{{ route('admin.orders.refund', $order->id) }}" method="POST" onsubmit="return confirm('PENTING: Pastikan dana sebesar Rp {{ number_format($order->total_price, 0, ',', '.') }} sudah dikembalikan ke pelanggan. Lanjutkan pembatalan?');" class="w-full">
+                                <form action="{{ route('admin.orders.refund', $order->id) }}" method="POST" enctype="multipart/form-data" onsubmit="return confirm('PENTING: Pastikan bukti transfer sudah benar. Lanjutkan?');" class="w-full">
                                     @csrf
+                                    <div class="mb-3 bg-white p-2 rounded border border-gray-200">
+                                        <label class="block text-[10px] font-bold text-gray-700 mb-1">Upload Bukti Transfer (Wajib):</label>
+                                        <input type="file" name="refund_proof" accept="image/*" required class="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer">
+                                    </div>
                                     <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-700 transition shadow-md w-full">
                                         Dana Sudah Dikembalikan (Konfirmasi Batal)
                                     </button>

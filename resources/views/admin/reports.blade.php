@@ -27,7 +27,6 @@
                     @forelse($reports as $report)
                         <div class="p-6 border border-gray-200 rounded-xl bg-gray-50/50 hover:shadow-md transition flex flex-col">
                             
-                            <!-- Bagian Atas: Rincian Laporan -->
                             <div class="flex flex-col md:flex-row justify-between items-start gap-6">
                                 <div class="flex-1 space-y-3">
                                     <div class="flex items-center gap-3">
@@ -36,7 +35,6 @@
                                         </span>
                                         <span class="text-xs text-gray-400">Waktu Laporan: {{ $report->created_at->format('d M Y, H:i') }} WIB</span>
                                         
-                                        <!-- Indikator Status -->
                                         @if($report->status == 'pending')
                                             <span class="text-[10px] font-bold px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded border border-yellow-200">Menunggu</span>
                                         @elseif($report->status == 'revisi')
@@ -63,22 +61,21 @@
                                 </div>
 
                                 <div class="w-full md:w-64 flex flex-col items-start md:items-end gap-2">
-                                    <strong class="text-xs text-gray-700">Bukti Foto Produk:</strong>
+                                    <strong class="text-xs text-gray-700">Bukti Foto Keluhan Produk:</strong>
                                     <div class="w-full h-40 bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm flex items-center justify-center">
-                                        <img src="{{ asset('storage/' . $report->proof_image) }}" alt="Bukti Pengembalian Dana" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer">
+                                        <img src="{{ asset('storage/' . $report->proof_image) }}" alt="Bukti Keluhan Pelanggan" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Bagian Bawah: Formulir Evaluasi Admin -->
                             <div class="w-full mt-6 pt-6 border-t border-gray-200">
                                 @if($report->status == 'pending')
-                                    <form action="{{ route('admin.reports.update', $report->id) }}" method="POST" class="bg-white p-4 rounded-lg border border-purple-100 flex flex-col gap-3 shadow-sm">
+                                    <form action="{{ route('admin.reports.update', $report->id) }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded-lg border border-purple-100 flex flex-col gap-3 shadow-sm">
                                         @csrf
                                         <div class="flex flex-col md:flex-row gap-4">
                                             <div class="w-full md:w-1/3">
                                                 <label class="block text-xs font-bold text-gray-700 mb-1">Status Laporan</label>
-                                                <select name="status" class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500" required>
+                                                <select name="status" class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500" required onchange="document.getElementById('proof-container-{{ $report->id }}').style.display = this.value === 'approved' ? 'block' : 'none'; document.getElementById('admin_refund_proof_{{ $report->id }}').required = this.value === 'approved';">
                                                     <option value="" disabled selected>-- Pilih Keputusan --</option>
                                                     <option value="revisi">Revisi Bukti</option>
                                                     <option value="approved">Setujui Refund(Final)</option>
@@ -90,6 +87,12 @@
                                                 <input type="text" name="admin_feedback" placeholder="Contoh: Bukti kurang jelas, mohon ajukan ulang dengan foto terang." class="w-full text-sm border-gray-300 rounded focus:ring-purple-500 focus:border-purple-500">
                                             </div>
                                         </div>
+
+                                        <div class="w-full" id="proof-container-{{ $report->id }}" style="display: none;">
+                                            <label class="block text-xs font-bold text-gray-700 mb-1">Upload Bukti Transfer Pengembalian Dana (Wajib jika disetujui)</label>
+                                            <input type="file" name="admin_refund_proof" id="admin_refund_proof_{{ $report->id }}" accept="image/*" class="block w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border border-gray-200 rounded cursor-pointer">
+                                        </div>
+
                                         <div class="text-right mt-2">
                                             <button type="submit" onclick="return confirm('Apakah Anda yakin dengan keputusan ini? Evaluasi yang sudah disimpan tidak dapat diubah kembali.')" class="bg-purple-700 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-purple-800 transition shadow-sm">
                                                 Simpan Evaluasi
@@ -107,6 +110,12 @@
                                                     <span class="inline-block px-3 py-1.5 bg-red-100 text-red-700 font-bold text-sm rounded-lg border border-red-200 cursor-not-allowed opacity-80">Ditolak</span>
                                                 @elseif($report->status == 'revisi')
                                                     <span class="inline-block px-3 py-1.5 bg-orange-100 text-orange-700 font-bold text-sm rounded-lg border border-orange-200 cursor-not-allowed opacity-80">Revisi Diminta</span>
+                                                @endif
+                                                
+                                                @if($report->admin_refund_proof)
+                                                    <a href="{{ asset('images/refunds/' . $report->admin_refund_proof) }}" target="_blank" class="mt-3 block text-center w-max px-3 py-1.5 bg-white text-green-700 text-xs font-bold rounded border border-green-200 hover:bg-green-50 transition shadow-sm">
+                                                        📸 Lihat Bukti Transfer
+                                                    </a>
                                                 @endif
                                             </div>
                                             <div class="w-full md:w-2/3">

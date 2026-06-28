@@ -35,13 +35,29 @@ class AdminController extends Controller
     // =======================================================
     // FITUR BARU: KONFIRMASI PENGEMBALIAN DANA PEMBATALAN
     // =======================================================
-    public function confirmRefundCancel($id)
+    public function confirmRefundCancel(Request $request, $id)
     {
+        // Validasi gambar bukti transfer
+        $request->validate([
+            'refund_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048'
+        ], [
+            'refund_proof.required' => 'Wajib mengunggah bukti transfer pengembalian dana.'
+        ]);
+
         // Hanya cari pesanan yang statusnya sedang 'cancel_processing'
         $order = Order::where('status', 'cancel_processing')->findOrFail($id);
         
+        // Proses upload gambar ke folder public/images/refunds
+        if ($request->hasFile('refund_proof')) {
+            $file = $request->file('refund_proof');
+            $filename = time() . '_batal_' . $file->getClientOriginalName();
+            $file->move(public_path('images/refunds'), $filename);
+            $order->refund_proof = $filename; // Simpan nama file
+        }
+
         // Ubah status jadi batal resmi
-        $order->update(['status' => 'cancelled']);
+        $order->status = 'cancelled';
+        $order->save();
 
         // Kembalikan stok barang ke etalase
         foreach ($order->items as $item) {
@@ -55,7 +71,7 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Dana telah dikonfirmasi kembali dan pesanan resmi dibatalkan.');
+        return redirect()->back()->with('success', 'Dana telah dikonfirmasi kembali beserta buktinya, dan pesanan resmi dibatalkan.');
     }
     // =======================================================
 
@@ -221,7 +237,10 @@ class AdminController extends Controller
         return view('admin.reports', compact('reports'));
     }
 
-    public function updateReportStatus(\Illuminate\Http\Request $request, $id)
+    // =======================================================
+    // FITUR BARU: UPLOAD BUKTI PADA LAPORAN KELUHAN
+    // =======================================================
+    public function updateReportStatus(Request $request, $id)
     {
         $report = \App\Models\RefundReport::findOrFail($id);
         
@@ -234,10 +253,25 @@ class AdminController extends Controller
             'admin_feedback' => 'nullable|string'
         ]);
 
-        $report->update([
-            'status' => $request->status,
-            'admin_feedback' => $request->admin_feedback
-        ]);
+        // Proses upload gambar khusus jika status disetujui (approved)
+        if ($request->status == 'approved') {
+            $request->validate([
+                'admin_refund_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048'
+            ], [
+                'admin_refund_proof.required' => 'Bukti pengembalian dana wajib diunggah jika laporan keluhan disetujui.'
+            ]);
+
+            if ($request->hasFile('admin_refund_proof')) {
+                $file = $request->file('admin_refund_proof');
+                $filename = time() . '_keluhan_' . $file->getClientOriginalName();
+                $file->move(public_path('images/refunds'), $filename);
+                $report->admin_refund_proof = $filename; // Simpan nama file
+            }
+        }
+
+        $report->status = $request->status;
+        $report->admin_feedback = $request->admin_feedback;
+        $report->save();
 
         return redirect()->back()->with('success', 'Status laporan dan umpan balik berhasil diperbarui.');
     }

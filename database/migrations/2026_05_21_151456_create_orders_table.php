@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('status')->default('pending');
             
             $table->string('cancel_reason')->nullable(); 
+            $table->string('refund_proof')->nullable();
             $table->integer('shipping_cost')->default(0); 
             $table->integer('admin_fee')->default(0);
 
