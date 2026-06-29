@@ -19,7 +19,7 @@ class PasswordController extends Controller
             'current_password' => ['required', 'current_password'],
             'password' => ['required', \Illuminate\Validation\Rules\Password::defaults(), 'confirmed'],
         ], [
-            // INI DIA MANTRA BUAT NGUBAH BAHASANYA BRO!
+            // BUAT NGUBAH BAHASA WARNING
             'current_password.required' => 'Password saat ini wajib diisi.',
             'current_password.current_password' => 'Password saat ini yang Anda masukkan salah.',
             'password.required' => 'Password baru wajib diisi.',

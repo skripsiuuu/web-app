@@ -54,7 +54,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                // INI DIA MANTRA BUAT TRANSLATE ERROR LOGIN-NYA BRO!
+                // TRANSLATE ERROR LOGIN
                 'email' => 'Email atau kata sandi yang Anda masukkan salah.',
             ]);
         }
