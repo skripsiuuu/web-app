@@ -27,7 +27,7 @@
                     <div class="p-6 border border-gray-200 rounded-xl bg-gray-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="space-y-1 w-full md:w-2/3">
                             <div class="flex items-center space-x-3">
-                                <span class="text-sm font-bold text-gray-700">#INV26-{{ $order->id }}</span>
+                                <span class="text-sm font-bold text-gray-700">#TEST26-{{ $order->id }}</span>
                                     <span class="px-2.5 py-0.5 text-xs font-bold rounded-full 
                                         {{ $order->status == 'unpaid' ? 'bg-gray-200 text-gray-700' : '' }}
                                         {{ $order->status == 'paid' ? 'bg-blue-100 text-blue-700' : '' }}

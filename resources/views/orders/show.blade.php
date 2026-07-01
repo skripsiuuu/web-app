@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Struk #INV26-{{ $order->id }}</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Struk #TEST26-{{ $order->id }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -17,7 +17,7 @@
                 <div class="p-8 bg-gray-50 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-black text-darkGreen">MITRA HIDUP SEHAT</h1>
-                        <p class="text-sm text-gray-500">Nomor Invoice: <strong>#INV26-{{ $order->id }}</strong></p>
+                        <p class="text-sm text-gray-500">Nomor Invoice: <strong>#TEST26-{{ $order->id }}</strong></p>
                     </div>
                     <div class="text-left md:text-right">
                         <p class="text-sm text-gray-500">Tanggal Transaksi:</p>

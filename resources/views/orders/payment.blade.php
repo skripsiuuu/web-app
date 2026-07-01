@@ -23,7 +23,7 @@
                 <div class="text-center mb-8 pb-8 border-b border-gray-100">
                     <h3 class="text-gray-500 font-bold tracking-widest text-sm uppercase mb-2">Total Tagihan</h3>
                     <h1 class="text-4xl font-black text-[#476024]">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h1>
-                    <p class="text-xs text-gray-400 mt-2">#INV26-{{ $order->id }}</p>
+                    <p class="text-xs text-gray-400 mt-2">#TEST26-{{ $order->id }}</p>
                 </div>
                 
                 <div class="mb-8">

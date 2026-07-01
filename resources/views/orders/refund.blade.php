@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow sm:rounded-xl border border-gray-100 p-6 sm:p-10">
                 
                 <div class="mb-6 border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Formulir Keluhan Pesanan #INV26-{{ $order->id }}</h3>
+                    <h3 class="text-lg font-bold text-gray-800">Formulir Keluhan Pesanan #TEST26-{{ $order->id }}</h3>
                     <p class="text-sm text-gray-500 mt-1">Silakan jelaskan kendala yang Anda alami dan unggah bukti berupa foto agar kami dapat segera memproses pengembalian dana Anda.</p>
                 </div>
 

@@ -66,7 +66,7 @@
                             
                             <div class="flex flex-col min-w-[200px]">
                                 <div class="flex items-center gap-3 mb-2">
-                                    <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">#INV26-{{ $order->id }}</span>
+                                    <span class="text-sm font-bold text-gray-800 uppercase tracking-wider">#TEST26-{{ $order->id }}</span>
                                     
                                     <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md
                                         {{ $order->status == 'unpaid' ? 'bg-red-50 text-red-600 border border-red-100' : '' }}

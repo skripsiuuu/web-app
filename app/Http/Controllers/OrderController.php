@@ -25,8 +25,8 @@ class OrderController extends Controller
             \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
             try {
-                // MENGGUNAKAN PREFIX INV26- SESUAI TAHUN 2026
-                $status = \Midtrans\Transaction::status('INV26-' . $order->id);
+                // MENGGUNAKAN PREFIX TEST26- SESUAI TAHUN 2026
+                $status = \Midtrans\Transaction::status('TEST26-' . $order->id);
 
                 if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
                     $order->update(['status' => 'paid']);
@@ -58,8 +58,8 @@ class OrderController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    // MENGGUNAKAN PREFIX INV26-
-                    'order_id' => 'INV26-' . $order->id, 
+                    // MENGGUNAKAN PREFIX TEST26-
+                    'order_id' => 'TEST26-' . $order->id, 
                     'gross_amount' => $order->total_price, // Total harga otomatis sudah termasuk ongkir & admin
                 ],
                 'customer_details' => [
@@ -174,8 +174,8 @@ class OrderController extends Controller
         $transactionStatus = $notif->transaction_status;
         $orderIdWithPrefix = $notif->order_id; 
         
-        // Membersihkan awalan INV26- untuk mendapatkan ID asli
-        $orderId = str_replace('INV26-', '', $orderIdWithPrefix);
+        // Membersihkan awalan TEST26- untuk mendapatkan ID asli
+        $orderId = str_replace('TEST26-', '', $orderIdWithPrefix);
         $order = \App\Models\Order::find($orderId);
 
         if (!$order) return response()->json(['message' => 'Data pesanan tidak ditemukan'], 404);

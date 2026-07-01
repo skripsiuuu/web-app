@@ -29,7 +29,7 @@ class AdminController extends Controller
         // Ubah status jadi 'shipping' (sedang dikirim)
         $order->update(['status' => 'shipping']);
 
-        return redirect()->back()->with('success', 'Pesanan #INV26-' . $id . ' berhasil dikonfirmasi dan sedang dikirim!');
+        return redirect()->back()->with('success', 'Pesanan #TEST26-' . $id . ' berhasil dikonfirmasi dan sedang dikirim!');
     }
 
     // =======================================================

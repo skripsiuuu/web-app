@@ -31,7 +31,7 @@
                                 <div class="flex-1 space-y-3">
                                     <div class="flex items-center gap-3">
                                         <span class="text-sm font-black text-purple-700 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-100">
-                                            #INV26-{{ $report->order_id }}
+                                            #TEST26-{{ $report->order_id }}
                                         </span>
                                         <span class="text-xs text-gray-400">Waktu Laporan: {{ $report->created_at->format('d M Y, H:i') }} WIB</span>
                                         
